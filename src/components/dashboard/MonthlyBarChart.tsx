@@ -1,0 +1,95 @@
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts'
+import type { MonthPoint } from '@/api/stats'
+
+const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
+
+function shortMonth(yyyyMM: string) {
+  const [y, m] = yyyyMM.split('-')
+  return new Date(+y, +m - 1).toLocaleDateString('en-US', { month: 'short' })
+}
+
+interface TooltipEntry { name: string; value: number; color: string }
+interface CustomTooltipProps { active?: boolean; payload?: TooltipEntry[]; label?: string }
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="ft-card" style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
+      <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 6 }}>{label}</p>
+      {payload.map((p) => (
+        <p key={p.name} style={{ color: p.color, margin: '2px 0', fontVariantNumeric: 'tabular-nums' }}>
+          {p.name}: {fmt.format(p.value ?? 0)}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+interface Props {
+  data: MonthPoint[]
+}
+
+export function MonthlyBarChart({ data }: Props) {
+  const chartData = data.map((d) => ({ ...d, month: shortMonth(d.month) }))
+  const hasData = data.some((d) => d.income > 0 || d.expense > 0)
+
+  return (
+    <div className="ft-card">
+      <div className="ft-card-head">
+        <h2 className="ft-h3">Last 6 months</h2>
+        <div className="ft-bar-legend">
+          <span><span className="ft-dot" style={{ background: '#22c55e' }} />Income</span>
+          <span><span className="ft-dot" style={{ background: '#ef4444' }} />Expense</span>
+        </div>
+      </div>
+      {!hasData ? (
+        <div className="ft-empty" style={{ padding: '40px 20px' }}>
+          <div className="ft-empty-t">No data yet</div>
+          <div className="ft-empty-s">Add transactions to see the chart</div>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={210}>
+          <BarChart data={chartData} barCategoryGap="30%" barGap={4}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+            <XAxis
+              dataKey="month"
+              tick={{ fontSize: 12, fill: 'var(--fg-muted)' }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tickFormatter={(v: number) => fmt.format(v)}
+              tick={{ fontSize: 11, fill: 'var(--fg-muted)' }}
+              axisLine={false}
+              tickLine={false}
+              width={68}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--row-hover)', radius: 4 }} />
+            <Bar dataKey="income"  name="Income"  fill="#22c55e" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  )
+}
+
+export function MonthlyBarChartSkeleton() {
+  return (
+    <div className="ft-card" style={{ opacity: 0.6 }}>
+      <div className="ft-card-head">
+        <div style={{ height: 16, width: 120, background: 'var(--border)', borderRadius: 4 }} />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 210, paddingTop: 16 }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ flex: 1, background: 'var(--border)', borderRadius: '4px 4px 0 0', opacity: 0.5 + i * 0.1 }} />
+            <div style={{ height: 12, background: 'var(--border)', borderRadius: 4, width: '60%', margin: '0 auto' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

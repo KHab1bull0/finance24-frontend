@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      viewport-fit=cover lets content extend into the notch/Dynamic Island area.
+      We then use env(safe-area-inset-*) in CSS to pad away from hardware edges.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!--
+      iOS PWA standalone mode.
+      IMPORTANT: user must DELETE the old shortcut and re-add from Share → Add to Home Screen
+      after these tags are deployed — iOS caches install metadata per URL.
+    -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!--
+      black-translucent: status bar text adapts to background, content renders edge-to-edge.
+      The header already pads env(safe-area-inset-top) so nothing is clipped.
+    -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Finance24" />
+
+    <!-- Home screen icon — iOS requires PNG (SVG is ignored) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Android PWA / browser theme color -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#6366F1" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#6366F1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <title>Finance24</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

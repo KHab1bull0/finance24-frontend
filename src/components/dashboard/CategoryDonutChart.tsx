@@ -1,0 +1,97 @@
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import type { CategoryBreakdown } from '@/api/stats'
+
+const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+interface PiePayload { name: string; value: number; payload: CategoryBreakdown }
+interface CustomTooltipProps { active?: boolean; payload?: PiePayload[] }
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  if (!active || !payload?.length) return null
+  const d = payload[0]
+  return (
+    <div className="ft-card" style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
+      <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 4 }}>{d.name}</p>
+      <p style={{ color: d.payload.color, fontVariantNumeric: 'tabular-nums' }}>{fmt.format(d.value ?? 0)}</p>
+      <p style={{ color: 'var(--fg-muted)', fontSize: 11 }}>{d.payload.percentage}% of expenses</p>
+    </div>
+  )
+}
+
+interface Props {
+  data: CategoryBreakdown[]
+}
+
+export function CategoryDonutChart({ data }: Props) {
+  const expenseData = data.filter((d) => d.type === 'expense')
+
+  return (
+    <div className="ft-card">
+      <div className="ft-card-head">
+        <h2 className="ft-h3">Spending by category</h2>
+        <span className="ft-label-tiny">Expenses</span>
+      </div>
+      {expenseData.length === 0 ? (
+        <div className="ft-empty" style={{ padding: '40px 20px' }}>
+          <div className="ft-empty-t">No expense data yet</div>
+          <div className="ft-empty-s">Add expense transactions to see the breakdown</div>
+        </div>
+      ) : (
+        <div className="ft-donut-wrap">
+          <ResponsiveContainer width={180} height={180}>
+            <PieChart>
+              <Pie
+                data={expenseData}
+                dataKey="total"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={52}
+                outerRadius={80}
+                paddingAngle={2}
+                strokeWidth={0}
+              >
+                {expenseData.map((entry) => (
+                  <Cell key={entry.categoryId} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
+
+          <ul className="ft-donut-legend">
+            {expenseData.map((d) => (
+              <li key={d.categoryId}>
+                <span className="ft-donut-dot" style={{ background: d.color }} />
+                <span className="ft-donut-name">{d.icon} {d.name}</span>
+                <span className="ft-donut-pct">{d.percentage}%</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function CategoryDonutChartSkeleton() {
+  return (
+    <div className="ft-card" style={{ opacity: 0.6 }}>
+      <div className="ft-card-head">
+        <div style={{ height: 16, width: 160, background: 'var(--border)', borderRadius: 4 }} />
+      </div>
+      <div className="ft-donut-wrap">
+        <div style={{ width: 180, height: 180, borderRadius: '50%', background: 'conic-gradient(var(--border) 0deg, var(--border) 360deg)', opacity: 0.4 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '12px 1fr auto', gap: 10, alignItems: 'center' }}>
+              <div style={{ width: 12, height: 12, borderRadius: 4, background: 'var(--border)' }} />
+              <div style={{ height: 13, background: 'var(--border)', borderRadius: 4 }} />
+              <div style={{ height: 13, width: 28, background: 'var(--border)', borderRadius: 4 }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
