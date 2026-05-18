@@ -81,10 +81,9 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    allowedHosts: ["troops-vinyl-obligation-however.trycloudflare.com"],
     proxy: {
-      "/api": {
-        target: "http://localhost:3000",
+      '/api': {
+        target: process.env.VITE_API_URL ?? 'http://localhost:3000',
         changeOrigin: true,
       },
     },
