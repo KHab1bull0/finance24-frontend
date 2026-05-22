@@ -21,7 +21,7 @@ export default defineConfig({
         short_name: "Finance24",
         description: "Personal finance tracker",
         theme_color: "#6366F1",
-        background_color: "#F8FAFC",
+        background_color: "#312e81",
         display: "standalone",
         display_override: ["standalone", "fullscreen"],
         orientation: "portrait",
@@ -32,17 +32,25 @@ export default defineConfig({
             src: "pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "manifest-icon-192.maskable.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
           },
           {
             src: "pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any",
           },
           {
-            src: "pwa-512x512.png",
+            src: "manifest-icon-512.maskable.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
           },
           {
             src: "apple-touch-icon.png",
@@ -81,11 +89,11 @@ export default defineConfig({
   },
   server: {
     port: 4040,
-    // proxy: {
-    //   '/api': {
-    //     target: process.env.VITE_API_URL ?? 'http://localhost:3000',
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
   },
 });
