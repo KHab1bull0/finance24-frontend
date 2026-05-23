@@ -5,6 +5,7 @@ import { StatCard, StatCardSkeleton } from '@/components/dashboard/StatCard'
 import { MonthlyBarChart, MonthlyBarChartSkeleton } from '@/components/dashboard/MonthlyBarChart'
 import { CategoryDonutChart, CategoryDonutChartSkeleton } from '@/components/dashboard/CategoryDonutChart'
 import { RecentTransactions, RecentTransactionsSkeleton } from '@/components/dashboard/RecentTransactions'
+import s from './DashboardPage.module.scss'
 
 export function DashboardPage() {
   const { data, isLoading, isError, refetch } = useQuery({
@@ -14,14 +15,14 @@ export function DashboardPage() {
 
   if (isError) {
     return (
-      <div className="ft-page" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div className="ft-empty">
-          <div className="ft-empty-glyph">
+      <div className={s.page} style={{ alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div className={s.empty}>
+          <div className={s.emptyGlyph}>
             <span style={{ fontSize: 24 }}>⚠️</span>
           </div>
-          <div className="ft-empty-t">Failed to load dashboard</div>
-          <div className="ft-empty-s">Check your connection or try again</div>
-          <button className="ft-btn ft-btn-secondary ft-btn-sm" style={{ marginTop: 8, gap: 6 }} onClick={() => refetch()}>
+          <div className={s.emptyTitle}>Failed to load dashboard</div>
+          <div className={s.emptySub}>Check your connection or try again</div>
+          <button className={s.btnSecondary} style={{ marginTop: 8, gap: 6 }} onClick={() => refetch()}>
             <RefreshCw size={14} /> Retry
           </button>
         </div>
@@ -34,16 +35,15 @@ export function DashboardPage() {
   })
 
   return (
-    <div className="ft-page">
-      {/* Header: desktop only — mobile shows app name+date in AppLayout's ft-mheader */}
-      <header className="ft-page-head ft-desktop-only">
+    <div className={s.page}>
+      <header className={`${s.pageHead} ${s.desktopOnly}`}>
         <div>
-          <h1 className="ft-h1">Dashboard</h1>
-          <div className="ft-page-sub">{today}</div>
+          <h1 className={s.h1}>Dashboard</h1>
+          <div className={s.pageSub}>{today}</div>
         </div>
       </header>
 
-      <section className="ft-stat-grid">
+      <section className={s.statGrid}>
         {isLoading ? (
           <>
             <StatCardSkeleton />
@@ -59,7 +59,7 @@ export function DashboardPage() {
         )}
       </section>
 
-      <section className="ft-chart-grid">
+      <section className={s.chartGrid}>
         {isLoading ? (
           <>
             <CategoryDonutChartSkeleton />

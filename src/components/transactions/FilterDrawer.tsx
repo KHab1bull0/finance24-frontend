@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import clsx from 'clsx'
 import { createPortal } from 'react-dom'
 import { X, Search, ChevronDown } from 'lucide-react'
 import type { Category } from '@/api/categories'
 import type { TransactionFilters } from '@/api/transactions'
+import s from './FilterDrawer.module.scss'
 
 interface Props {
   open: boolean
@@ -36,25 +38,25 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
   return createPortal(
     <>
       <div
-        className={`ft-drawer-overlay${open ? ' is-open' : ''}`}
+        className={clsx(s.drawerOverlay, open && s.open)}
         onClick={onClose}
       />
-      <div className={`ft-drawer${open ? ' is-open' : ''}`}>
-        <div className="ft-drawer-head">
-          <span className="ft-drawer-title">Filters</span>
-          <button className="ft-icon-btn" onClick={onClose} aria-label="Close filters">
+      <div className={clsx(s.drawer, open && s.open)}>
+        <div className={s.drawerHead}>
+          <span className={s.drawerTitle}>Filters</span>
+          <button className={s.iconBtn} onClick={onClose} aria-label="Close filters">
             <X size={18} />
           </button>
         </div>
 
-        <div className="ft-drawer-body">
-          <div className="ft-field">
-            <span className="ft-field-label">Type</span>
-            <div className="ft-tabs">
+        <div className={s.drawerBody}>
+          <div className={s.field}>
+            <span className={s.fieldLabel}>Type</span>
+            <div className={s.tabs}>
               {TYPE_OPTIONS.map(({ value, label }) => (
                 <button
                   key={value}
-                  className={`ft-tab ${(draft.type ?? '') === value ? 'is-active' : ''}`}
+                  className={clsx(s.tab, (draft.type ?? '') === value && s.active)}
                   onClick={() => setDraft((d) => ({ ...d, type: value || undefined }))}
                 >
                   {label}
@@ -63,12 +65,12 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
             </div>
           </div>
 
-          <div className="ft-field">
-            <span className="ft-field-label">Search</span>
-            <div className="ft-filter-search" style={{ height: 44 }}>
+          <div className={s.field}>
+            <span className={s.fieldLabel}>Search</span>
+            <div className={s.filterSearch} style={{ height: 44 }}>
               <Search size={15} />
               <input
-                className="ft-filter-input"
+                className={s.filterInput}
                 placeholder="Search by note or category"
                 value={draft.search ?? ''}
                 onChange={(e) => setDraft((d) => ({ ...d, search: e.target.value || undefined }))}
@@ -76,11 +78,11 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
             </div>
           </div>
 
-          <div className="ft-field">
-            <span className="ft-field-label">Category</span>
-            <div className="ft-input-wrap" style={{ position: 'relative' }}>
+          <div className={s.field}>
+            <span className={s.fieldLabel}>Category</span>
+            <div className={s.inputWrap} style={{ position: 'relative' }}>
               <select
-                className="ft-input ft-select"
+                className={clsx(s.input, s.select)}
                 value={draft.categoryId ?? 'all'}
                 onChange={(e) =>
                   setDraft((d) => ({
@@ -96,22 +98,22 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
                   </option>
                 ))}
               </select>
-              <span className="ft-select-chev">
+              <span className={s.selectChev}>
                 <ChevronDown size={15} />
               </span>
             </div>
           </div>
         </div>
 
-        <div className="ft-drawer-footer">
-          <button className="ft-btn ft-btn-secondary ft-btn-md" onClick={handleReset}>
+        <div className={s.drawerFooter}>
+          <button className={s.btnSecondary} onClick={handleReset}>
             Reset
           </button>
-          <button className="ft-btn ft-btn-primary ft-btn-md" onClick={handleApply}>
+          <button className={s.btnPrimary} onClick={handleApply}>
             <Search size={15} /> Search
           </button>
         </div>
-        <div className="ft-drawer-handle" />
+        <div className={s.drawerHandle} />
       </div>
     </>,
     document.body,

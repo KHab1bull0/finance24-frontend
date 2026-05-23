@@ -5,10 +5,10 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { MobileFilterProvider } from '@/contexts/MobileFilterContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
-import { AuthPage } from '@/pages/AuthPage'
-import { DashboardPage } from '@/pages/DashboardPage'
-import { TransactionsPage } from '@/pages/TransactionsPage'
-import { SettingsPage } from '@/pages/SettingsPage'
+import { AuthPage } from '@/pages/auth'
+import { DashboardPage } from '@/pages/dashboard'
+import { TransactionsPage } from '@/pages/transactions'
+import { SettingsPage } from '@/pages/settings'
 
 const queryClient = new QueryClient({
   defaultOptions: {

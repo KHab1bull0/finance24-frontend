@@ -1,7 +1,9 @@
+import clsx from 'clsx'
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, ArrowLeftRight, Settings, Wallet, PanelLeft, Sun, Moon, LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
+import s from './Sidebar.module.scss'
 
 const NAV_ITEMS = [
   { to: '/',             icon: LayoutDashboard, label: 'Dashboard'    },
@@ -20,28 +22,28 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const initial = user?.username?.[0]?.toUpperCase() ?? 'U'
 
   return (
-    <aside className={`ft-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
-      <div className="ft-sidebar-top">
-        <div className="ft-logo">
-          <div className="ft-logo-mark">
+    <aside className={clsx(s.sidebar, collapsed && s.collapsed)}>
+      <div className={s.sidebarTop}>
+        <div className={s.logo}>
+          <div className={s.logoMark}>
             <Wallet size={18} />
           </div>
-          {!collapsed && <span className="ft-logo-word">Finance</span>}
+          {!collapsed && <span className={s.logoWord}>Finance</span>}
         </div>
         {!collapsed && (
-          <button className="ft-collapse" onClick={onToggle} aria-label="Collapse sidebar">
+          <button className={s.collapseBtn} onClick={onToggle} aria-label="Collapse sidebar">
             <PanelLeft size={16} />
           </button>
         )}
       </div>
 
-      <nav className="ft-nav">
+      <nav className={s.nav}>
         {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
-            className={({ isActive }) => `ft-nav-item ${isActive ? 'is-active' : ''}`}
+            className={({ isActive }) => clsx(s.navItem, isActive && s.active)}
             title={collapsed ? label : undefined}
           >
             <Icon size={18} />
@@ -50,27 +52,24 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="ft-sidebar-bottom">
-        <button className="ft-theme-toggle" onClick={toggleTheme}>
+      <div className={s.sidebarBottom}>
+        <button className={s.themeToggle} onClick={toggleTheme}>
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           {!collapsed && <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
         </button>
-        <div className="ft-user">
-          <div className="ft-avatar">{initial}</div>
+        <div className={s.user}>
+          <div className={s.avatar}>{initial}</div>
           {!collapsed && (
-            <div className="ft-user-meta">
-              <div className="ft-user-name">{user?.username}</div>
-              <button
-                onClick={logout}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--fg-muted)', fontSize: 11, fontFamily: 'inherit' }}
-              >
+            <div className={s.userMeta}>
+              <div className={s.userName}>{user?.username}</div>
+              <button className={s.signOutBtn} onClick={logout}>
                 <LogOut size={11} /> Sign out
               </button>
             </div>
           )}
         </div>
         {collapsed && (
-          <button className="ft-collapse" onClick={onToggle} aria-label="Expand sidebar" style={{ margin: '4px auto 0' }}>
+          <button className={s.collapseBtnCentered} onClick={onToggle} aria-label="Expand sidebar">
             <PanelLeft size={16} style={{ transform: 'rotate(180deg)' }} />
           </button>
         )}

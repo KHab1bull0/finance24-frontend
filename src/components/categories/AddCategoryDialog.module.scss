@@ -1,0 +1,21 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// Only ft-* classes — shadcn/Tailwind classes (space-y-4, flex, etc.) stay as-is
+
+.tabs {
+  @include tabs-base;
+  width: 100%;
+}
+
+.tab {
+  @include tab-base;
+  flex: 1;
+  text-transform: capitalize;
+
+  &.active {
+    background: var(--bg-elev);
+    color: var(--fg-strong);
+    box-shadow: 0 1px 2px rgba(15, 17, 23, 0.08);
+  }
+}

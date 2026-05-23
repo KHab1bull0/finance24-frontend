@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import type { CategoryBreakdown } from '@/api/stats'
+import s from './CategoryDonutChart.module.scss'
 
 const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -10,7 +11,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const d = payload[0]
   return (
-    <div className="ft-card" style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
+    <div className={s.card} style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
       <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 4 }}>{d.name}</p>
       <p style={{ color: d.payload.color, fontVariantNumeric: 'tabular-nums' }}>{fmt.format(d.value ?? 0)}</p>
       <p style={{ color: 'var(--fg-muted)', fontSize: 11 }}>{d.payload.percentage}% of expenses</p>
@@ -26,18 +27,18 @@ export function CategoryDonutChart({ data }: Props) {
   const expenseData = data.filter((d) => d.type === 'expense')
 
   return (
-    <div className="ft-card">
-      <div className="ft-card-head">
-        <h2 className="ft-h3">Spending by category</h2>
-        <span className="ft-label-tiny">Expenses</span>
+    <div className={s.card}>
+      <div className={s.cardHead}>
+        <h2 className={s.h3}>Spending by category</h2>
+        <span className={s.labelTiny}>Expenses</span>
       </div>
       {expenseData.length === 0 ? (
-        <div className="ft-empty" style={{ padding: '40px 20px' }}>
-          <div className="ft-empty-t">No expense data yet</div>
-          <div className="ft-empty-s">Add expense transactions to see the breakdown</div>
+        <div className={s.empty} style={{ padding: '40px 20px' }}>
+          <div className={s.emptyTitle}>No expense data yet</div>
+          <div className={s.emptySub}>Add expense transactions to see the breakdown</div>
         </div>
       ) : (
-        <div className="ft-donut-wrap">
+        <div className={s.donutWrap}>
           <ResponsiveContainer width={180} height={180}>
             <PieChart>
               <Pie
@@ -59,12 +60,12 @@ export function CategoryDonutChart({ data }: Props) {
             </PieChart>
           </ResponsiveContainer>
 
-          <ul className="ft-donut-legend">
+          <ul className={s.donutLegend}>
             {expenseData.map((d) => (
               <li key={d.categoryId}>
-                <span className="ft-donut-dot" style={{ background: d.color }} />
-                <span className="ft-donut-name">{d.icon} {d.name}</span>
-                <span className="ft-donut-pct">{d.percentage}%</span>
+                <span className={s.donutDot} style={{ background: d.color }} />
+                <span className={s.donutName}>{d.icon} {d.name}</span>
+                <span className={s.donutPct}>{d.percentage}%</span>
               </li>
             ))}
           </ul>
@@ -76,11 +77,11 @@ export function CategoryDonutChart({ data }: Props) {
 
 export function CategoryDonutChartSkeleton() {
   return (
-    <div className="ft-card" style={{ opacity: 0.6 }}>
-      <div className="ft-card-head">
+    <div className={s.card} style={{ opacity: 0.6 }}>
+      <div className={s.cardHead}>
         <div style={{ height: 16, width: 160, background: 'var(--border)', borderRadius: 4 }} />
       </div>
-      <div className="ft-donut-wrap">
+      <div className={s.donutWrap}>
         <div style={{ width: 180, height: 180, borderRadius: '50%', background: 'conic-gradient(var(--border) 0deg, var(--border) 360deg)', opacity: 0.4 }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {Array.from({ length: 4 }).map((_, i) => (

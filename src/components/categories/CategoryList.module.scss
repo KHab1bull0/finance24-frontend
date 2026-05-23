@@ -1,0 +1,76 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.catGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.catCard {
+  display: grid;
+  grid-template-columns: 40px 1fr 28px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.catEmoji {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.catMeta { min-width: 0; }
+
+.catName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+
+.catDot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+
+  span {
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-pill;
+    flex-shrink: 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+}
+
+.catDel {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+}

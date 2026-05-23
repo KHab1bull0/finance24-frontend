@@ -1,6 +1,8 @@
+import clsx from 'clsx'
 import { Search, ChevronDown } from 'lucide-react'
 import type { Category } from '@/api/categories'
 import type { TransactionFilters } from '@/api/transactions'
+import s from './TransactionFilters.module.scss'
 
 interface Props {
   filters: TransactionFilters
@@ -16,12 +18,12 @@ const TYPE_OPTIONS = [
 
 export function TransactionFilters({ filters, onChange, categories }: Props) {
   return (
-    <div className="ft-filter-bar">
-      <div className="ft-tabs">
+    <div className={s.filterBar}>
+      <div className={s.tabs}>
         {TYPE_OPTIONS.map(({ value, label }) => (
           <button
             key={value}
-            className={`ft-tab ${(filters.type ?? '') === value ? 'is-active' : ''}`}
+            className={clsx(s.tab, (filters.type ?? '') === value && s.active)}
             onClick={() => onChange({ ...filters, type: value || undefined })}
           >
             {label}
@@ -29,11 +31,11 @@ export function TransactionFilters({ filters, onChange, categories }: Props) {
         ))}
       </div>
 
-      <div className="ft-filter-grow">
-        <div className="ft-filter-search">
+      <div className={s.filterGrow}>
+        <div className={s.filterSearch}>
           <Search size={15} />
           <input
-            className="ft-filter-input"
+            className={s.filterInput}
             placeholder="Search by note or category"
             value={filters.search ?? ''}
             onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
@@ -41,9 +43,9 @@ export function TransactionFilters({ filters, onChange, categories }: Props) {
         </div>
       </div>
 
-      <div className="ft-filter-cat">
+      <div className={s.filterCat}>
         <select
-          className="ft-input ft-select"
+          className={s.input}
           value={filters.categoryId ?? 'all'}
           onChange={(e) => onChange({ ...filters, categoryId: e.target.value === 'all' ? undefined : e.target.value })}
         >
@@ -52,7 +54,7 @@ export function TransactionFilters({ filters, onChange, categories }: Props) {
             <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
           ))}
         </select>
-        <span className="ft-select-chev"><ChevronDown size={15} /></span>
+        <span className={s.selectChev}><ChevronDown size={15} /></span>
       </div>
     </div>
   )

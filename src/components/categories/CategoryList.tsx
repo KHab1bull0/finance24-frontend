@@ -8,6 +8,7 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import s from './CategoryList.module.scss'
 
 function CategoryCard({ cat }: { cat: Category }) {
   const qc = useQueryClient()
@@ -28,23 +29,23 @@ function CategoryCard({ cat }: { cat: Category }) {
   }
 
   return (
-    <div className="ft-cat-card">
+    <div className={s.catCard}>
       <span
-        className="ft-cat-emoji"
+        className={s.catEmoji}
         style={{ background: cat.color + '22', color: cat.color }}
       >
         {cat.icon}
       </span>
-      <div className="ft-cat-meta">
-        <div className="ft-cat-name">{cat.name}</div>
-        <div className="ft-cat-dot">
+      <div className={s.catMeta}>
+        <div className={s.catName}>{cat.name}</div>
+        <div className={s.catDot}>
           <span style={{ background: cat.color }} />
           <code>{cat.color}</code>
         </div>
       </div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <button className="ft-cat-del" disabled={deleting} aria-label="Delete">
+          <button className={s.catDel} disabled={deleting} aria-label="Delete">
             <Trash2 size={14} />
           </button>
         </AlertDialogTrigger>
@@ -88,7 +89,7 @@ export function CategoryList({ categories, type }: Props) {
   }
 
   return (
-    <div className="ft-cat-grid">
+    <div className={s.catGrid}>
       {filtered.map((cat) => <CategoryCard key={cat.id} cat={cat} />)}
     </div>
   )

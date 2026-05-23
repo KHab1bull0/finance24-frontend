@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
+import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import { Wallet } from 'lucide-react'
 import api from '@/api/axios'
 import { useAuth } from '@/contexts/AuthContext'
+import s from './AuthPage.module.scss'
 
 type Mode = 'login' | 'register'
 
@@ -51,83 +53,75 @@ export function AuthPage() {
   const isLogin = mode === 'login'
 
   return (
-    <div className="ft-auth-page">
-      <div className="ft-auth-brand">
-        <div className="ft-logo-mark">
+    <div className={s.authPage}>
+      <div className={s.authBrand}>
+        <div className={s.logoMark}>
           <Wallet size={18} />
         </div>
-        <span className="ft-auth-brand-name">Finance Tracker</span>
+        <span className={s.authBrandName}>Finance Tracker</span>
       </div>
 
-      <div className="ft-card ft-auth-card">
-        <h1 className="ft-auth-title">{isLogin ? 'Welcome back' : 'Create account'}</h1>
-        <p className="ft-auth-sub">
+      <div className={s.authCard}>
+        <h1 className={s.authTitle}>{isLogin ? 'Welcome back' : 'Create account'}</h1>
+        <p className={s.authSub}>
           {isLogin ? 'Sign in to your account' : 'Choose a username and password to get started'}
         </p>
 
-        {/* Mode tabs */}
-        <div className="ft-tabs" style={{ marginBottom: 24, width: '100%' }}>
+        <div className={s.tabs}>
           <button
-            className={`ft-tab ${isLogin ? 'is-active' : ''}`}
-            style={{ flex: 1 }}
+            className={clsx(s.tab, isLogin && s.active)}
             onClick={() => { setMode('login'); setError('') }}
           >
             Sign in
           </button>
           <button
-            className={`ft-tab ${!isLogin ? 'is-active' : ''}`}
-            style={{ flex: 1 }}
+            className={clsx(s.tab, !isLogin && s.active)}
             onClick={() => { setMode('register'); setError('') }}
           >
             Register
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="ft-auth-form">
-          <label className="ft-field">
-            <span className="ft-field-label">Username</span>
-            <div className="ft-input-wrap">
+        <form onSubmit={handleSubmit} className={s.authForm}>
+          <label className={s.field}>
+            <span className={s.fieldLabel}>Username</span>
+            <div className={s.inputWrap}>
               <input
-                className="ft-input"
+                className={s.input}
                 placeholder={isLogin ? 'Your username' : 'Pick a username (3–50 chars)'}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                autoComplete={isLogin ? 'username' : 'username'}
+                autoComplete="username"
                 required
                 minLength={3}
               />
             </div>
           </label>
 
-          <label className="ft-field">
-            <span className="ft-field-label">Password</span>
-            <div className="ft-input-wrap">
+          <label className={s.field}>
+            <span className={s.fieldLabel}>Password</span>
+            <div className={s.inputWrap}>
               <input
-                className="ft-input"
+                className={s.input}
                 type="password"
-                placeholder={isLogin ? 'Your password' : 'At least 8 characters'}
+                placeholder={isLogin ? 'Your password' : 'At least 4 characters'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 required
-                minLength={isLogin ? 1 : 8}
+                minLength={4}
               />
             </div>
           </label>
 
-          {error && <div className="ft-auth-error">{error}</div>}
+          {error && <div className={s.authError}>{error}</div>}
 
-          <button
-            type="submit"
-            className="ft-btn ft-btn-primary ft-btn-lg"
-            style={{ width: '100%' }}
-            disabled={loading}
-          >
+          <button type="submit" className={s.btnPrimary} disabled={loading}>
             {loading ? 'Please wait…' : isLogin ? 'Sign in' : 'Create account'}
           </button>
         </form>
 
-        <p className="ft-auth-switch">
+        <p className={s.authSwitch}>
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
           <button type="button" onClick={switchMode}>
             {isLogin ? 'Register' : 'Sign in'}

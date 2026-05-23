@@ -2,6 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import type { MonthPoint } from '@/api/stats'
+import s from './MonthlyBarChart.module.scss'
 
 const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
 
@@ -16,7 +17,7 @@ interface CustomTooltipProps { active?: boolean; payload?: TooltipEntry[]; label
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div className="ft-card" style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
+    <div className={s.card} style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
       <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 6 }}>{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color, margin: '2px 0', fontVariantNumeric: 'tabular-nums' }}>
@@ -36,18 +37,18 @@ export function MonthlyBarChart({ data }: Props) {
   const hasData = data.some((d) => d.income > 0 || d.expense > 0)
 
   return (
-    <div className="ft-card">
-      <div className="ft-card-head">
-        <h2 className="ft-h3">Last 6 months</h2>
-        <div className="ft-bar-legend">
-          <span><span className="ft-dot" style={{ background: '#22c55e' }} />Income</span>
-          <span><span className="ft-dot" style={{ background: '#ef4444' }} />Expense</span>
+    <div className={s.card}>
+      <div className={s.cardHead}>
+        <h2 className={s.h3}>Last 6 months</h2>
+        <div className={s.barLegend}>
+          <span><span className={s.dot} style={{ background: '#22c55e' }} />Income</span>
+          <span><span className={s.dot} style={{ background: '#ef4444' }} />Expense</span>
         </div>
       </div>
       {!hasData ? (
-        <div className="ft-empty" style={{ padding: '40px 20px' }}>
-          <div className="ft-empty-t">No data yet</div>
-          <div className="ft-empty-s">Add transactions to see the chart</div>
+        <div className={s.empty} style={{ padding: '40px 20px' }}>
+          <div className={s.emptyTitle}>No data yet</div>
+          <div className={s.emptySub}>Add transactions to see the chart</div>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={210}>
@@ -78,8 +79,8 @@ export function MonthlyBarChart({ data }: Props) {
 
 export function MonthlyBarChartSkeleton() {
   return (
-    <div className="ft-card" style={{ opacity: 0.6 }}>
-      <div className="ft-card-head">
+    <div className={s.card} style={{ opacity: 0.6 }}>
+      <div className={s.cardHead}>
         <div style={{ height: 16, width: 120, background: 'var(--border)', borderRadius: 4 }} />
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 210, paddingTop: 16 }}>

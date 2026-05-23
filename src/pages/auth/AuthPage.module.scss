@@ -1,0 +1,145 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.authPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 16px;
+}
+
+.authBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.logoMark {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.authBrandName {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+
+.authCard {
+  @include card-base;
+  width: 100%;
+  max-width: 400px;
+}
+
+.authTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--fg-strong);
+  margin: 0 0 6px;
+}
+
+.authSub {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin: 0 0 24px;
+}
+
+.tabs {
+  @include tabs-base;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.tab {
+  @include tab-base;
+  flex: 1;
+
+  &.active {
+    background: var(--bg-elev);
+    color: var(--fg-strong);
+    box-shadow: 0 1px 2px rgba(15, 17, 23, 0.08);
+  }
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  @include field-base;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.inputWrap {
+  @include input-wrap-base;
+}
+
+.input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--fg-strong);
+
+  &::placeholder { color: var(--fg-muted); }
+}
+
+.authError {
+  font-size: 13px;
+  color: var(--danger);
+  padding: 10px 12px;
+  background: var(--danger-soft);
+  border-radius: $radius-sm;
+}
+
+.btnPrimary {
+  @include btn-primary;
+  @include btn-size-lg;
+  width: 100%;
+}
+
+.authSwitch {
+  text-align: center;
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-top: 16px;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .input { font-size: 16px; }
+}

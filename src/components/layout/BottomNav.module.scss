@@ -1,0 +1,40 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.bottomnav {
+  display: none;
+
+  @include bp-tablet {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--bg-elev);
+    border-top: 1px solid var(--border);
+    padding: 0
+             max(0px, env(safe-area-inset-right))
+             env(safe-area-inset-bottom)
+             max(0px, env(safe-area-inset-left));
+    flex-shrink: 0;
+    z-index: 30;
+  }
+}
+
+.bnavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 10px 0;
+  width: 100%;
+  min-height: 48px;
+  text-decoration: none;
+
+  &.active { color: var(--primary); }
+}

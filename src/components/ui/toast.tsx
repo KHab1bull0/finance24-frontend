@@ -1,5 +1,7 @@
+import clsx from 'clsx'
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle } from 'lucide-react'
+import s from './toast.module.scss'
 
 interface ToastItem {
   id: string
@@ -19,20 +21,20 @@ export function ToastHost() {
   useEffect(() => {
     _addToast = (msg, tone = 'success') => {
       const id = Math.random().toString(36).slice(2)
-      setItems((s) => [...s, { id, message: msg, tone }])
-      setTimeout(() => setItems((s) => s.filter((x) => x.id !== id)), 2800)
+      setItems((prev) => [...prev, { id, message: msg, tone }])
+      setTimeout(() => setItems((prev) => prev.filter((x) => x.id !== id)), 2800)
     }
     return () => { _addToast = null }
   }, [])
 
   return (
-    <div className="ft-toast-host" aria-live="polite">
+    <div className={s.toastHost} aria-live="polite">
       {items.map((t) => (
-        <div key={t.id} className={`ft-toast ft-toast-${t.tone}`}>
-          <span className="ft-toast-ic">
+        <div key={t.id} className={clsx(s.toast, t.tone === 'success' ? s.toastSuccess : s.toastError)}>
+          <span className={s.toastIc}>
             {t.tone === 'success' ? <CheckCircle size={14} /> : <XCircle size={14} />}
           </span>
-          <span className="ft-toast-msg">{t.message}</span>
+          <span className={s.toastMsg}>{t.message}</span>
         </div>
       ))}
     </div>

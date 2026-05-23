@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import clsx from 'clsx'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { createCategory } from '@/api/categories'
@@ -8,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import s from './AddCategoryDialog.module.scss'
 
 const COLOR_PALETTE = [
   '#ef4444', '#f97316', '#eab308', '#22c55e',
@@ -67,20 +69,19 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Type */}
-          <div className="ft-tabs" style={{ width: '100%' }}>
+          {/* Type — uses module scss */}
+          <div className={s.tabs}>
             {(['expense', 'income'] as const).map((t) => (
               <button
                 key={t} type="button" onClick={() => setType(t)}
-                className={`ft-tab ${type === t ? 'is-active' : ''}`}
-                style={{ flex: 1, textTransform: 'capitalize' }}
+                className={clsx(s.tab, type === t && s.active)}
               >
                 {t}
               </button>
             ))}
           </div>
 
-          {/* Name */}
+          {/* Name — uses shadcn/Tailwind */}
           <div className="space-y-1.5">
             <Label htmlFor="cat-name">Name</Label>
             <Input
@@ -89,7 +90,7 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
             />
           </div>
 
-          {/* Color palette */}
+          {/* Color palette — uses shadcn/Tailwind */}
           <div className="space-y-1.5">
             <Label>Color</Label>
             <div className="flex flex-wrap gap-2">
@@ -107,7 +108,7 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
             </div>
           </div>
 
-          {/* Emoji picker */}
+          {/* Emoji picker — uses shadcn/Tailwind */}
           <div className="space-y-1.5">
             <Label>Icon</Label>
             <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto rounded-md border p-2">

@@ -1,10 +1,12 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
+import clsx from 'clsx'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { TrendingUp, TrendingDown, Calendar, ChevronDown } from 'lucide-react'
 import { fetchCategories } from '@/api/categories'
 import { createTransaction } from '@/api/transactions'
 import { toast } from '@/components/ui/toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import s from './AddTransactionDialog.module.scss'
 
 interface Props {
   open: boolean
@@ -90,51 +92,55 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
           <DialogTitle>Add Transaction</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="ft-form" style={{ gap: 20 }}>
+        <form onSubmit={handleSubmit} className={s.form} style={{ gap: 20 }}>
           {/* Type toggle */}
-          <div className="ft-type-toggle">
+          <div className={s.typeToggle}>
             <button
               type="button"
-              className={`ft-type ft-type--in ${type === 'income' ? 'is-active' : ''}`}
+              className={clsx(s.type, s.typeIn, type === 'income' && s.active)}
               onClick={() => { setType('income'); setCategoryId('') }}
             >
-              <span className="ft-type-ic"><TrendingUp size={18} /></span>
-              <span className="ft-type-t">Income</span>
-              <span className="ft-type-s">Money in</span>
+              <span className={s.typeIc}><TrendingUp size={18} /></span>
+              <span className={s.typeTitle}>Income</span>
+              <span className={s.typeSub}>Money in</span>
             </button>
             <button
               type="button"
-              className={`ft-type ft-type--out ${type === 'expense' ? 'is-active' : ''}`}
+              className={clsx(s.type, s.typeOut, type === 'expense' && s.active)}
               onClick={() => { setType('expense'); setCategoryId('') }}
             >
-              <span className="ft-type-ic"><TrendingDown size={18} /></span>
-              <span className="ft-type-t">Expense</span>
-              <span className="ft-type-s">Money out</span>
+              <span className={s.typeIc}><TrendingDown size={18} /></span>
+              <span className={s.typeTitle}>Expense</span>
+              <span className={s.typeSub}>Money out</span>
             </button>
           </div>
 
           {/* Amount */}
-          <div className="ft-amount-wrap">
-            <span className="ft-amount-label">Amount</span>
-            <div className={`ft-amount ${type === 'income' ? 'is-in' : 'is-out'} ${touched && !amount ? 'is-error' : ''}`}>
+          <div className={s.amountWrap}>
+            <span className={s.amountLabel}>Amount</span>
+            <div className={clsx(
+              s.amount,
+              type === 'income' ? s.amtIn : s.amtOut,
+              touched && !amount && s.error,
+            )}>
               <input
                 inputMode="decimal"
                 value={formatDisplay(amount)}
                 onChange={(e) => handleAmountInput(e, setAmount)}
-                className="ft-amount-input"
+                className={s.amountInput}
                 placeholder="0"
               />
-              <span className="ft-amount-sfx">UZS</span>
+              <span className={s.amountSfx}>UZS</span>
             </div>
           </div>
 
           {/* Category + Date grid */}
-          <div className="ft-form-grid">
-            <label className="ft-field">
-              <span className="ft-field-label">Category</span>
-              <div className="ft-input-wrap" style={{ position: 'relative' }}>
+          <div className={s.formGrid}>
+            <label className={s.field}>
+              <span className={s.fieldLabel}>Category</span>
+              <div className={s.inputWrap} style={{ position: 'relative' }}>
                 <select
-                  className="ft-input ft-select"
+                  className={clsx(s.input, s.select)}
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                   required
@@ -144,16 +150,16 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
                     <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                   ))}
                 </select>
-                <span className="ft-select-chev"><ChevronDown size={15} /></span>
+                <span className={s.selectChev}><ChevronDown size={15} /></span>
               </div>
             </label>
 
-            <label className="ft-field">
-              <span className="ft-field-label">Date</span>
-              <div className="ft-input-wrap">
-                <span className="ft-input-left"><Calendar size={15} /></span>
+            <label className={s.field}>
+              <span className={s.fieldLabel}>Date</span>
+              <div className={s.inputWrap}>
+                <span className={s.inputLeft}><Calendar size={15} /></span>
                 <input
-                  className="ft-input"
+                  className={s.input}
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
@@ -165,11 +171,11 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
           </div>
 
           {/* Note */}
-          <label className="ft-field">
-            <span className="ft-field-label">Note (optional)</span>
-            <div className="ft-input-wrap">
+          <label className={s.field}>
+            <span className={s.fieldLabel}>Note (optional)</span>
+            <div className={s.inputWrap}>
               <input
-                className="ft-input"
+                className={s.input}
                 placeholder="e.g. Lunch, Grocery run…"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -178,13 +184,13 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
             </div>
           </label>
 
-          {error && <div className="ft-field-err">{error}</div>}
+          {error && <div className={s.fieldErr}>{error}</div>}
 
-          <div className="ft-form-actions">
-            <button type="button" className="ft-btn ft-btn-secondary ft-btn-md" onClick={() => onOpenChange(false)}>
+          <div className={s.formActions}>
+            <button type="button" className={s.btnSecondary} onClick={() => onOpenChange(false)}>
               Cancel
             </button>
-            <button type="submit" className="ft-btn ft-btn-primary ft-btn-md" disabled={loading}>
+            <button type="submit" className={s.btnPrimary} disabled={loading}>
               {loading ? 'Saving…' : 'Save'}
             </button>
           </div>

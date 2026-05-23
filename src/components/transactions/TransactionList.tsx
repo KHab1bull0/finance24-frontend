@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import clsx from 'clsx'
 import { Trash2, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { deleteTransaction, type Transaction } from '@/api/transactions'
@@ -8,6 +9,7 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import s from './TransactionList.module.scss'
 
 const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -49,25 +51,25 @@ function TransactionRow({ tx }: { tx: Transaction }) {
   }
 
   return (
-    <div className="ft-tx-row ft-tx-row--full">
+    <div className={s.txRow}>
       <div
-        className="ft-tx-cat"
+        className={s.txCat}
         style={{ background: tx.category.color + '22', color: tx.category.color }}
       >
         {tx.category.icon}
       </div>
-      <div className="ft-tx-meta">
-        <div className="ft-tx-title">{tx.note ?? tx.category.name}</div>
-        <div className="ft-tx-sub">
+      <div className={s.txMeta}>
+        <div className={s.txTitle}>{tx.note ?? tx.category.name}</div>
+        <div className={s.txSub}>
           {tx.note ? `${tx.category.name} · ` : ''}{tx.createdAt?.slice(11, 16) ?? tx.date.slice(0, 10)}
         </div>
       </div>
-      <div className={`ft-tx-amt ${tx.type === 'income' ? 'is-in' : 'is-out'}`}>
+      <div className={clsx(s.txAmt, tx.type === 'income' ? s.amtIn : s.amtOut)}>
         {tx.type === 'income' ? '+' : '−'}{fmt.format(tx.amount)}
       </div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <button className="ft-tx-del" disabled={deleting} aria-label="Delete">
+          <button className={s.txDel} disabled={deleting} aria-label="Delete">
             <Trash2 size={15} />
           </button>
         </AlertDialogTrigger>
@@ -104,12 +106,12 @@ interface Props {
 export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadMore }: Props) {
   if (transactions.length === 0) {
     return (
-      <div className="ft-card ft-empty">
-        <div className="ft-empty-glyph">
+      <div className={s.emptyCard}>
+        <div className={s.emptyGlyph}>
           <Wallet size={28} />
         </div>
-        <div className="ft-empty-t">No transactions found</div>
-        <div className="ft-empty-s">Try adjusting your filters or add a new transaction</div>
+        <div className={s.emptyTitle}>No transactions found</div>
+        <div className={s.emptySub}>Try adjusting your filters or add a new transaction</div>
       </div>
     )
   }
@@ -119,16 +121,16 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {groups.map(([date, txs]) => {
-        const dayTotal = txs.reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0)
+        const dayTotal = txs.reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0)
         return (
-          <div key={date} className="ft-day-group">
-            <div className="ft-day-head">
-              <span className="ft-day-label">{formatDayLabel(date)}</span>
-              <span className={`ft-day-total ${dayTotal >= 0 ? 'is-in' : 'is-out'}`}>
+          <div key={date} className={s.dayGroup}>
+            <div className={s.dayHead}>
+              <span className={s.dayLabel}>{formatDayLabel(date)}</span>
+              <span className={clsx(s.dayTotal, dayTotal >= 0 ? s.amtIn : s.amtOut)}>
                 {dayTotal >= 0 ? '+' : '−'}{fmt.format(Math.abs(dayTotal))}
               </span>
             </div>
-            <div className="ft-card ft-tx-list">
+            <div className={clsx(s.card, s.txList)}>
               {txs.map((tx) => <TransactionRow key={tx.id} tx={tx} />)}
             </div>
           </div>
@@ -140,7 +142,7 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
           <button
             onClick={onLoadMore}
             disabled={isFetchingMore}
-            className="ft-btn ft-btn-secondary ft-btn-sm"
+            className={s.btnSecondary}
           >
             {isFetchingMore ? 'Loading…' : 'Load more'}
           </button>

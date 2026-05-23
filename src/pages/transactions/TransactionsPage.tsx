@@ -8,19 +8,20 @@ import { AddTransactionDialog } from '@/components/transactions/AddTransactionDi
 import { TransactionFilters as FiltersBar } from '@/components/transactions/TransactionFilters'
 import { FilterDrawer } from '@/components/transactions/FilterDrawer'
 import { TransactionList } from '@/components/transactions/TransactionList'
+import s from './TransactionsPage.module.scss'
 
 function ListSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {[0, 1].map((g) => (
-        <div key={g} className="ft-day-group">
-          <div className="ft-day-head">
+        <div key={g} className={s.dayGroup}>
+          <div className={s.dayHead}>
             <div style={{ height: 11, width: 60, background: 'var(--border)', borderRadius: 4 }} />
             <div style={{ height: 12, width: 50, background: 'var(--border)', borderRadius: 4 }} />
           </div>
-          <div className="ft-card ft-tx-list">
+          <div className={`${s.card} ${s.txList}`}>
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="ft-tx-row ft-tx-row--full" style={{ opacity: 0.6 }}>
+              <div key={i} className={s.txRow} style={{ opacity: 0.6 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--border)' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <div style={{ height: 14, width: 100 + g * 20, background: 'var(--border)', borderRadius: 4 }} />
@@ -71,20 +72,20 @@ export function TransactionsPage() {
   const transactions = data?.pages.flatMap((p) => p.data) ?? []
 
   return (
-    <div className="ft-page">
-      <header className="ft-page-head">
+    <div className={s.page}>
+      <header className={s.pageHead}>
         <div>
-          <h1 className="ft-h1">Transactions</h1>
-          <div className="ft-page-sub">
+          <h1 className={s.h1}>Transactions</h1>
+          <div className={s.pageSub}>
             {transactions.length > 0 ? `${transactions.length} records` : 'Track your income & expenses'}
           </div>
         </div>
-        <button className="ft-btn ft-btn-primary ft-btn-sm" onClick={() => setDialogOpen(true)}>
+        <button className={s.btnPrimary} onClick={() => setDialogOpen(true)}>
           <Plus size={14} /> Add
         </button>
       </header>
 
-      <div className="ft-desktop-only">
+      <div className={s.desktopOnly}>
         <FiltersBar filters={filters} onChange={setFilters} categories={categories} />
       </div>
 
@@ -97,9 +98,9 @@ export function TransactionsPage() {
       />
 
       {isError ? (
-        <div className="ft-card ft-empty">
-          <div className="ft-empty-t">Failed to load transactions</div>
-          <button className="ft-btn ft-btn-secondary ft-btn-sm" style={{ marginTop: 8 }} onClick={() => refetch()}>
+        <div className={s.emptyCard}>
+          <div className={s.emptyTitle}>Failed to load transactions</div>
+          <button className={s.btnSecondary} style={{ marginTop: 8 }} onClick={() => refetch()}>
             <RefreshCw size={14} /> Retry
           </button>
         </div>
@@ -118,4 +119,3 @@ export function TransactionsPage() {
     </div>
   )
 }
-
