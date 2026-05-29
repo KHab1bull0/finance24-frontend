@@ -5,15 +5,15 @@
    Finance Tracker — Design Tokens
    ============================================================ */
 :root {
-  --brand-indigo-50:  #EEF0FF;
-  --brand-indigo-100: #E0E3FF;
-  --brand-indigo-200: #C4C9FF;
-  --brand-indigo-300: #9DA3FF;
-  --brand-indigo-400: #7B81F5;
-  --brand-indigo-500: #6366F1;
-  --brand-indigo-600: #5558E5;
-  --brand-indigo-700: #4448C8;
-  --brand-indigo-900: #2A2D80;
+  --brand-green-50:  #F0FDF4;
+  --brand-green-100: #DCFCE7;
+  --brand-green-200: #BBF7D0;
+  --brand-green-300: #86EFAC;
+  --brand-green-400: #4ADE80;
+  --brand-green-500: #22C55E;
+  --brand-green-600: #16A34A;
+  --brand-green-700: #15803D;
+  --brand-green-900: #14532D;
 
   --green-500: #22C55E;
   --green-600: #16A34A;
@@ -82,7 +82,7 @@
   --fg-muted:   #94A3B8;
   --fg-on-primary: #FFFFFF;
 
-  --hover-bg:       rgba(99, 102, 241, 0.06);
+  --hover-bg:       rgba(34, 197, 94, 0.06);
   --row-hover:      rgba(15, 17, 23, 0.03);
   --icon-btn-hover: #F1F5F9;
 
@@ -90,8 +90,8 @@
   --shadow-md: 0 4px 16px rgba(15, 17, 23, 0.06), 0 2px 4px rgba(15, 17, 23, 0.04);
   --shadow-lg: 0 16px 40px rgba(15, 17, 23, 0.12);
 
-  --primary:       var(--brand-indigo-500);
-  --primary-hover: var(--brand-indigo-600);
+  --primary:       var(--brand-green-600);
+  --primary-hover: var(--brand-green-700);
   --primary-fg:    #FFFFFF;
 
   --success:      var(--green-500);
@@ -119,7 +119,7 @@
   --fg-muted:   #94A3B8;
   --fg-on-primary: #FFFFFF;
 
-  --hover-bg:       rgba(99, 102, 241, 0.10);
+  --hover-bg:       rgba(34, 197, 94, 0.10);
   --row-hover:      rgba(255, 255, 255, 0.04);
   --icon-btn-hover: #262A3D;
 
@@ -127,8 +127,8 @@
   --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
 
-  --primary:       var(--brand-indigo-500);
-  --primary-hover: var(--brand-indigo-400);
+  --primary:       var(--brand-green-500);
+  --primary-hover: var(--brand-green-400);
   --primary-fg:    #FFFFFF;
 
   --success:      var(--green-500);
