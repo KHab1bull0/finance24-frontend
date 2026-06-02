@@ -15,7 +15,7 @@ const DialogOverlay = forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity data-[state=open]:opacity-100 data-[state=closed]:opacity-0',
+      'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity data-[state=open]:opacity-100 data-[state=closed]:opacity-0',
       className,
     )}
     {...props}
@@ -32,7 +32,7 @@ const DialogContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6',
+        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg max-h-screen overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6',
         className,
       )}
       {...props}

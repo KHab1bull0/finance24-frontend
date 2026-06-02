@@ -79,7 +79,7 @@ export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="h-screen">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
@@ -103,6 +103,7 @@ export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
             <Input
               id="cat-name" placeholder="e.g. Groceries" value={name}
               onChange={(e) => setName(e.target.value)} maxLength={100} required
+              className="border-0 bg-muted"
             />
           </div>
 
@@ -127,7 +128,7 @@ export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
           {/* Emoji picker — uses shadcn/Tailwind */}
           <div className="space-y-1.5">
             <Label>Icon</Label>
-            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto rounded-md border p-2">
+            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto rounded-md bg-muted p-2">
               {EMOJI_LIST.map((e) => (
                 <button
                   key={e} type="button" title={e}
@@ -146,7 +147,7 @@ export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <DialogFooter>
+          <DialogFooter className="flex-row justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading} className="gap-2">
               {!isEdit && <Plus size={14} />}

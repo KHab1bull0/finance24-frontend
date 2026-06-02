@@ -139,8 +139,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
 }
 
 .field {
@@ -155,6 +153,10 @@
 
 .inputWrap {
   @include input-wrap-base;
+  // Flat fields: no neutral border, subtle filled background instead.
+  background: var(--slate-50);
+
+  :global(.theme-dark) & { background: var(--bg); }
 
   &.error {
     border-color: var(--danger);

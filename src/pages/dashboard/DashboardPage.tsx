@@ -59,6 +59,17 @@ export function DashboardPage() {
         />
       </header>
 
+      <div className={`${s.mobileOnly} ${s.monthBar}`}>
+        <input
+          type="month"
+          className={s.monthPicker}
+          value={month}
+          max={currentMonth()}
+          onChange={(e) => setMonth(e.target.value || currentMonth())}
+          aria-label="Select month"
+        />
+      </div>
+
       <section className={s.statGrid}>
         {isLoading ? (
           <>

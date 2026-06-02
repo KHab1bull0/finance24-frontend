@@ -59,9 +59,9 @@ export function AppLayout() {
         </button>
 
         <BottomNav />
+        <AddTransactionDialog open={addOpen} onOpenChange={setAddOpen} />
       </main>
 
-      <AddTransactionDialog open={addOpen} onOpenChange={setAddOpen} />
       <ToastHost />
     </div>
   )

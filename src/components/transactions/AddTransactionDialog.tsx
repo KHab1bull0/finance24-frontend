@@ -114,7 +114,7 @@ export function AddTransactionDialog({ open, onOpenChange, transaction }: Props)
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent className="max-w-md p-5">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
@@ -161,26 +161,27 @@ export function AddTransactionDialog({ open, onOpenChange, transaction }: Props)
             </div>
           </div>
 
-          {/* Category + Date grid */}
-          <div className={s.formGrid}>
-            <label className={s.field}>
-              <span className={s.fieldLabel}>Category</span>
-              <div className={s.inputWrap} style={{ position: 'relative' }}>
-                <select
-                  className={clsx(s.input, s.select)}
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  required
-                >
-                  <option value="">Select…</option>
-                  {filtered.map((c) => (
-                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-                  ))}
-                </select>
-                <span className={s.selectChev}><ChevronDown size={15} /></span>
-              </div>
-            </label>
+          {/* Category */}
+          <label className={s.field}>
+            <span className={s.fieldLabel}>Category</span>
+            <div className={s.inputWrap} style={{ position: 'relative' }}>
+              <select
+                className={clsx(s.input, s.select)}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                required
+              >
+                <option value="">Select…</option>
+                {filtered.map((c) => (
+                  <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                ))}
+              </select>
+              <span className={s.selectChev}><ChevronDown size={15} /></span>
+            </div>
+          </label>
 
+          {/* Date + Time grid */}
+          <div className={s.formGrid}>
             <label className={s.field}>
               <span className={s.fieldLabel}>Date</span>
               <div className={s.inputWrap}>
