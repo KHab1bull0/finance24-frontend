@@ -20,8 +20,15 @@ export const fetchCategories = async (): Promise<Category[]> => {
   return data
 }
 
+export type UpdateCategoryDto = Partial<CreateCategoryDto>
+
 export const createCategory = async (dto: CreateCategoryDto): Promise<Category> => {
   const { data } = await api.post<Category>('/categories', dto)
+  return data
+}
+
+export const updateCategory = async (id: string, dto: UpdateCategoryDto): Promise<Category> => {
+  const { data } = await api.patch<Category>(`/categories/${id}`, dto)
   return data
 }
 

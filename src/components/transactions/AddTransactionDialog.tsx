@@ -1,9 +1,9 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react'
 import clsx from 'clsx'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { TrendingUp, TrendingDown, Calendar, ChevronDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, ChevronDown } from 'lucide-react'
 import { fetchCategories } from '@/api/categories'
-import { createTransaction } from '@/api/transactions'
+import { createTransaction, updateTransaction, type Transaction } from '@/api/transactions'
 import { toast } from '@/components/ui/toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import s from './AddTransactionDialog.module.scss'
@@ -11,10 +11,15 @@ import s from './AddTransactionDialog.module.scss'
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
+  transaction?: Transaction | null
 }
 
 function today() {
   return new Date().toISOString().slice(0, 10)
+}
+
+function now() {
+  return new Date().toTimeString().slice(0, 5)
 }
 
 function formatDisplay(raw: string): string {
@@ -32,13 +37,15 @@ function handleAmountInput(
   if (/^\d*\.?\d*$/.test(stripped)) setter(stripped)
 }
 
-export function AddTransactionDialog({ open, onOpenChange }: Props) {
+export function AddTransactionDialog({ open, onOpenChange, transaction }: Props) {
   const qc = useQueryClient()
+  const isEdit = !!transaction
 
   const [type, setType] = useState<'income' | 'expense'>('expense')
   const [amount, setAmount] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [date, setDate] = useState(today)
+  const [time, setTime] = useState(now)
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -51,11 +58,26 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
 
   const filtered = categories.filter((c) => c.type === type)
 
+  // Prefill when opening in edit mode.
+  useEffect(() => {
+    if (open && transaction) {
+      setType(transaction.type)
+      setAmount(String(transaction.amount))
+      setCategoryId(transaction.category.id)
+      setDate(transaction.date.slice(0, 10))
+      setTime(transaction.time ?? transaction.createdAt?.slice(11, 16) ?? now())
+      setNote(transaction.note ?? '')
+      setError('')
+      setTouched(false)
+    }
+  }, [open, transaction])
+
   function reset() {
     setType('expense')
     setAmount('')
     setCategoryId('')
     setDate(today())
+    setTime(now())
     setNote('')
     setError('')
     setTouched(false)
@@ -72,14 +94,19 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
     setLoading(true)
     setError('')
     try {
-      await createTransaction({ amount: num, type, categoryId, date, note: note || undefined })
+      const payload = { amount: num, type, categoryId, date, time: time || undefined, note: note || undefined }
+      if (isEdit && transaction) {
+        await updateTransaction(transaction.id, payload)
+      } else {
+        await createTransaction(payload)
+      }
       await qc.invalidateQueries({ queryKey: ['transactions'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
-      toast('Transaction added', 'success')
+      toast(isEdit ? 'Transaction updated' : 'Transaction added', 'success')
       reset()
       onOpenChange(false)
     } catch {
-      setError('Failed to add transaction')
+      setError(isEdit ? 'Failed to update transaction' : 'Failed to add transaction')
     } finally {
       setLoading(false)
     }
@@ -87,12 +114,12 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md p-5">
         <DialogHeader>
-          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className={s.form} style={{ gap: 20 }}>
+        <form onSubmit={handleSubmit} className={s.form}>
           {/* Type toggle */}
           <div className={s.typeToggle}>
             <button
@@ -157,14 +184,24 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
             <label className={s.field}>
               <span className={s.fieldLabel}>Date</span>
               <div className={s.inputWrap}>
-                <span className={s.inputLeft}><Calendar size={15} /></span>
                 <input
                   className={s.input}
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
-                  style={{ paddingLeft: 8 }}
+                />
+              </div>
+            </label>
+
+            <label className={s.field}>
+              <span className={s.fieldLabel}>Time</span>
+              <div className={s.inputWrap}>
+                <input
+                  className={s.input}
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
                 />
               </div>
             </label>
@@ -191,7 +228,7 @@ export function AddTransactionDialog({ open, onOpenChange }: Props) {
               Cancel
             </button>
             <button type="submit" className={s.btnPrimary} disabled={loading}>
-              {loading ? 'Saving…' : 'Save'}
+              {loading ? 'Saving…' : isEdit ? 'Save changes' : 'Save'}
             </button>
           </div>
         </form>

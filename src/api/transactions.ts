@@ -7,6 +7,7 @@ export interface Transaction {
   type: 'income' | 'expense'
   note: string | null
   date: string
+  time?: string
   createdAt: string
   category: Pick<Category, 'id' | 'name' | 'icon' | 'color'>
 }
@@ -31,8 +32,11 @@ export interface CreateTransactionDto {
   type: 'income' | 'expense'
   categoryId: string
   date: string
+  time?: string
   note?: string
 }
+
+export type UpdateTransactionDto = Partial<CreateTransactionDto>
 
 export const fetchTransactions = async (
   filters: TransactionFilters,
@@ -47,6 +51,14 @@ export const fetchTransactions = async (
 
 export const createTransaction = async (dto: CreateTransactionDto): Promise<Transaction> => {
   const { data } = await api.post<Transaction>('/transactions', dto)
+  return data
+}
+
+export const updateTransaction = async (
+  id: string,
+  dto: UpdateTransactionDto,
+): Promise<Transaction> => {
+  const { data } = await api.patch<Transaction>(`/transactions/${id}`, dto)
   return data
 }
 

@@ -34,7 +34,9 @@ export interface DashboardStats {
   recentTransactions: RecentTransaction[]
 }
 
-export async function fetchDashboard(): Promise<DashboardStats> {
-  const { data } = await api.get<DashboardStats>('/stats/dashboard')
+export async function fetchDashboard(month?: string): Promise<DashboardStats> {
+  const { data } = await api.get<DashboardStats>('/stats/dashboard', {
+    params: { month },
+  })
   return data
 }

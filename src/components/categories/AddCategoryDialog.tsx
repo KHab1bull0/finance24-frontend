@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import clsx from 'clsx'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { createCategory } from '@/api/categories'
+import { createCategory, updateCategory, type Category } from '@/api/categories'
 import { toast } from '@/components/ui/toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,10 +27,12 @@ const EMOJI_LIST = [
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
+  category?: Category
 }
 
-export function AddCategoryDialog({ open, onOpenChange }: Props) {
+export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
   const qc = useQueryClient()
+  const isEdit = Boolean(category)
 
   const [type, setType] = useState<'income' | 'expense'>('expense')
   const [name, setName] = useState('')
@@ -40,8 +42,17 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
   const [error, setError] = useState('')
 
   function reset() {
-    setType('expense'); setName(''); setColor(COLOR_PALETTE[5]); setIcon('📁'); setError('')
+    if (category) {
+      setType(category.type); setName(category.name); setColor(category.color); setIcon(category.icon); setError('')
+    } else {
+      setType('expense'); setName(''); setColor(COLOR_PALETTE[5]); setIcon('📁'); setError('')
+    }
   }
+
+  useEffect(() => {
+    if (open) reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, category])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -49,13 +60,18 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
 
     setLoading(true); setError('')
     try {
-      await createCategory({ name: name.trim(), type, color, icon })
+      if (category) {
+        await updateCategory(category.id, { name: name.trim(), type, color, icon })
+      } else {
+        await createCategory({ name: name.trim(), type, color, icon })
+      }
       await qc.invalidateQueries({ queryKey: ['categories'] })
-      toast('Category created', 'success')
+      await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      toast(category ? 'Category updated' : 'Category created', 'success')
       reset()
       onOpenChange(false)
     } catch {
-      setError('Failed to create category')
+      setError(category ? 'Failed to update category' : 'Failed to create category')
     } finally {
       setLoading(false)
     }
@@ -65,7 +81,7 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add Category</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -133,8 +149,8 @@ export function AddCategoryDialog({ open, onOpenChange }: Props) {
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading} className="gap-2">
-              <Plus size={14} />
-              {loading ? 'Creating…' : 'Create'}
+              {!isEdit && <Plus size={14} />}
+              {isEdit ? (loading ? 'Saving…' : 'Save') : (loading ? 'Creating…' : 'Create')}
             </Button>
           </DialogFooter>
         </form>

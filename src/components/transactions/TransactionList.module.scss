@@ -72,7 +72,7 @@
 
 .txRow {
   display: grid;
-  grid-template-columns: 44px 1fr auto 36px;
+  grid-template-columns: 44px 1fr auto auto;
   align-items: center;
   gap: 14px;
   padding: 14px 12px 14px 20px;
@@ -82,9 +82,19 @@
   &:last-child { border-bottom: none; }
   &:hover { background: var(--row-hover); }
 
-  &:hover .txDel { opacity: 1; }
+  &:hover .txDel,
+  &:hover .txEdit { opacity: 1; }
 
-  @include bp-mobile { .txDel { opacity: 1; } }
+  @include bp-mobile {
+    .txDel,
+    .txEdit { opacity: 1; }
+  }
+}
+
+.txActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .txCat {
@@ -121,7 +131,8 @@
   &.amtOut { color: var(--danger); }
 }
 
-.txDel {
+.txDel,
+.txEdit {
   width: 32px;
   height: 32px;
   border-radius: $radius-sm;
@@ -135,12 +146,17 @@
   opacity: 0;
   transition: opacity $t-fast, background $t-fast;
 
-  &:hover {
-    background: var(--danger-soft);
-    color: var(--danger);
-  }
-
   @include bp-mobile { opacity: 1; }
+}
+
+.txDel:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.txEdit:hover {
+  background: var(--bg-elev);
+  color: var(--fg-strong);
 }
 
 .btnSecondary {

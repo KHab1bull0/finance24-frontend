@@ -10,7 +10,7 @@
 
 .catCard {
   display: grid;
-  grid-template-columns: 40px 1fr 28px;
+  grid-template-columns: 40px 1fr 28px 28px;
   gap: 12px;
   align-items: center;
   padding: 12px;
@@ -54,6 +54,24 @@
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--fg-muted);
+  }
+}
+
+.catEdit {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--bg-muted, var(--border));
+    color: var(--fg-strong);
   }
 }
 

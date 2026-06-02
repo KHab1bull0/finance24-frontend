@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import clsx from 'clsx'
-import { Trash2, Wallet } from 'lucide-react'
+import { Pencil, Trash2, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { deleteTransaction, type Transaction } from '@/api/transactions'
 import { toast } from '@/components/ui/toast'
@@ -9,6 +9,7 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { AddTransactionDialog } from './AddTransactionDialog'
 import s from './TransactionList.module.scss'
 
 const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -32,7 +33,7 @@ function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
   return Array.from(map.entries())
 }
 
-function TransactionRow({ tx }: { tx: Transaction }) {
+function TransactionRow({ tx, onEdit }: { tx: Transaction; onEdit: (tx: Transaction) => void }) {
   const [deleting, setDeleting] = useState(false)
   const qc = useQueryClient()
 
@@ -61,19 +62,27 @@ function TransactionRow({ tx }: { tx: Transaction }) {
       <div className={s.txMeta}>
         <div className={s.txTitle}>{tx.note ?? tx.category.name}</div>
         <div className={s.txSub}>
-          {tx.note ? `${tx.category.name} · ` : ''}{tx.createdAt?.slice(11, 16) ?? tx.date.slice(0, 10)}
+          {tx.note ? `${tx.category.name} · ` : ''}{tx.time ?? tx.createdAt?.slice(11, 16) ?? tx.date.slice(0, 10)}
         </div>
       </div>
       <div className={clsx(s.txAmt, tx.type === 'income' ? s.amtIn : s.amtOut)}>
         {tx.type === 'income' ? '+' : '−'}{fmt.format(tx.amount)}
       </div>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button className={s.txDel} disabled={deleting} aria-label="Delete">
-            <Trash2 size={15} />
-          </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
+      <div className={s.txActions}>
+        <button
+          className={s.txEdit}
+          onClick={() => onEdit(tx)}
+          aria-label="Edit"
+        >
+          <Pencil size={15} />
+        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className={s.txDel} disabled={deleting} aria-label="Delete">
+              <Trash2 size={15} />
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -90,8 +99,9 @@ function TransactionRow({ tx }: { tx: Transaction }) {
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   )
 }
@@ -104,6 +114,8 @@ interface Props {
 }
 
 export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadMore }: Props) {
+  const [editing, setEditing] = useState<Transaction | null>(null)
+
   if (transactions.length === 0) {
     return (
       <div className={s.emptyCard}>
@@ -119,6 +131,7 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
   const groups = groupByDate(transactions)
 
   return (
+    <>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {groups.map(([date, txs]) => {
         const dayTotal = txs.reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0)
@@ -131,7 +144,7 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
               </span>
             </div>
             <div className={clsx(s.card, s.txList)}>
-              {txs.map((tx) => <TransactionRow key={tx.id} tx={tx} />)}
+              {txs.map((tx) => <TransactionRow key={tx.id} tx={tx} onEdit={setEditing} />)}
             </div>
           </div>
         )
@@ -149,5 +162,12 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
         </div>
       )}
     </div>
+
+    <AddTransactionDialog
+      open={editing !== null}
+      onOpenChange={(v) => { if (!v) setEditing(null) }}
+      transaction={editing}
+    />
+    </>
   )
 }

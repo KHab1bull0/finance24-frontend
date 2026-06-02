@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { deleteCategory, type Category } from '@/api/categories'
 import { toast } from '@/components/ui/toast'
@@ -8,9 +8,10 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { AddCategoryDialog } from './AddCategoryDialog'
 import s from './CategoryList.module.scss'
 
-function CategoryCard({ cat }: { cat: Category }) {
+function CategoryCard({ cat, onEdit }: { cat: Category; onEdit: (cat: Category) => void }) {
   const qc = useQueryClient()
   const [deleting, setDeleting] = useState(false)
 
@@ -43,6 +44,9 @@ function CategoryCard({ cat }: { cat: Category }) {
           <code>{cat.color}</code>
         </div>
       </div>
+      <button className={s.catEdit} onClick={() => onEdit(cat)} aria-label="Edit">
+        <Pencil size={14} />
+      </button>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <button className={s.catDel} disabled={deleting} aria-label="Delete">
@@ -79,6 +83,13 @@ interface Props {
 
 export function CategoryList({ categories, type }: Props) {
   const filtered = categories.filter((c) => c.type === type)
+  const [editing, setEditing] = useState<Category | null>(null)
+  const [editOpen, setEditOpen] = useState(false)
+
+  function handleEdit(cat: Category) {
+    setEditing(cat)
+    setEditOpen(true)
+  }
 
   if (filtered.length === 0) {
     return (
@@ -90,7 +101,15 @@ export function CategoryList({ categories, type }: Props) {
 
   return (
     <div className={s.catGrid}>
-      {filtered.map((cat) => <CategoryCard key={cat.id} cat={cat} />)}
+      {filtered.map((cat) => <CategoryCard key={cat.id} cat={cat} onEdit={handleEdit} />)}
+      {editing && (
+        <AddCategoryDialog
+          key={editing.id}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          category={editing}
+        />
+      )}
     </div>
   )
 }

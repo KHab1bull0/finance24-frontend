@@ -99,3 +99,27 @@
   @include btn-secondary;
   @include btn-size-sm;
 }
+
+.monthPicker {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--fg-strong);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px var(--brand-100);
+  }
+
+  :global(.theme-dark) & {
+    background: var(--slate-800);
+    color-scheme: dark;
+  }
+}

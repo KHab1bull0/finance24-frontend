@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, TrendingDown, Wallet, RefreshCw } from 'lucide-react'
 import { fetchDashboard } from '@/api/stats'
@@ -7,10 +8,17 @@ import { CategoryDonutChart, CategoryDonutChartSkeleton } from '@/components/das
 import { RecentTransactions, RecentTransactionsSkeleton } from '@/components/dashboard/RecentTransactions'
 import s from './DashboardPage.module.scss'
 
+function currentMonth(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
 export function DashboardPage() {
+  const [month, setMonth] = useState<string>(currentMonth)
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: fetchDashboard,
+    queryKey: ['dashboard', month],
+    queryFn: () => fetchDashboard(month),
   })
 
   if (isError) {
@@ -41,6 +49,14 @@ export function DashboardPage() {
           <h1 className={s.h1}>Dashboard</h1>
           <div className={s.pageSub}>{today}</div>
         </div>
+        <input
+          type="month"
+          className={s.monthPicker}
+          value={month}
+          max={currentMonth()}
+          onChange={(e) => setMonth(e.target.value || currentMonth())}
+          aria-label="Select month"
+        />
       </header>
 
       <section className={s.statGrid}>
