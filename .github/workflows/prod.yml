@@ -43,9 +43,9 @@ jobs:
           script: |
             cd ~/financetracker
             docker pull ${{ secrets.DOCKER_USERNAME }}/finance_front:latest
-            docker stop front || true
-            docker rm front || true
-            docker compose up -d --no-deps front
+            docker stop finance24_front || true
+            docker rm finance24_front || true
+            docker compose up -d --no-deps finance24_front
             docker image prune -f
 
       - name: Log Success
