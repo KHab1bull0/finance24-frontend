@@ -4,8 +4,11 @@
 .app {
   display: grid;
   grid-template-columns: $sidebar-w-expanded 1fr;
-  height: 100vh;
+  // Inherit the html/body/#root fill-available chain instead of 100vh, which on
+  // iOS Safari counts the URL bar and pushes the bottom nav off-screen.
+  height: 100%;
   overflow: hidden;
+  transition: grid-template-columns $t-base $ease-house;
 
   &.collapsed {
     grid-template-columns: $sidebar-w-collapsed 1fr;
@@ -33,12 +36,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    padding-top: max(14px, env(safe-area-inset-top));
+    // calc, not max: on a notched device max() would swallow the 14px of design
+    // padding and leave the title flush against the notch.
+    padding-top: calc(14px + env(safe-area-inset-top));
+    padding-left: calc(16px + env(safe-area-inset-left));
+    padding-right: calc(16px + env(safe-area-inset-right));
     border-bottom: 1px solid var(--border);
     background: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 30;
     flex-shrink: 0;
   }
 }
@@ -85,6 +89,9 @@
 
 .scroll {
   flex: 1;
+  // Without this a flex-column child refuses to shrink below its content,
+  // so long pages push the bottom nav off-screen instead of scrolling.
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -109,8 +116,9 @@
   @include bp-tablet {
     display: flex;
     position: fixed;
-    bottom: calc(80px + env(safe-area-inset-bottom));
-    right: 20px;
+    // Derived from the nav token so the two can't drift apart.
+    bottom: calc(#{$bottom-nav-h} + #{$space-4} + env(safe-area-inset-bottom));
+    right: calc(20px + env(safe-area-inset-right));
     width: 52px;
     height: 52px;
     border-radius: $radius-pill;
