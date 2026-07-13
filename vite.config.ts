@@ -1,10 +1,13 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  return {
   plugins: [
     react(),
     tailwindcss(),
@@ -89,11 +92,19 @@ export default defineConfig({
   },
   server: {
     port: 4040,
+    // Bind on the LAN so a phone can open the dev server. Without this the
+    // dev server is localhost-only and unreachable from a device.
+    host: true,
     proxy: {
+      // In dev the app calls a relative /api, which lands here and is proxied
+      // to the backend. Keeping it same-origin is what lets a phone on the LAN
+      // work: an absolute http://localhost:... would resolve to the phone.
+      // Target is read from env so it cannot go stale when the backend port moves.
       '/api': {
-        target: 'http://localhost:3000',
+        target: env.VITE_API_URL || 'http://localhost:3005',
         changeOrigin: true,
       },
     },
   },
+  };
 });

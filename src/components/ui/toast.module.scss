@@ -3,7 +3,8 @@
 
 .toastHost {
   position: fixed;
-  top: 24px;
+  // Clear the notch/status bar, otherwise toasts land underneath it in the PWA.
+  top: calc(24px + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   display: flex;

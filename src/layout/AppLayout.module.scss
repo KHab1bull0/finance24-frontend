@@ -72,8 +72,10 @@
 }
 
 .iconBtn {
-  width: 36px;
-  height: 36px;
+  // 40px keeps the header compact while staying close to the 44px touch target
+  // guideline; this control only ever renders on mobile.
+  width: 40px;
+  height: 40px;
   border-radius: $radius-md;
   background: transparent;
   border: none;
@@ -94,6 +96,12 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+
+  // The FAB floats over the bottom of this area; without the runway the last
+  // row of every page sits underneath it.
+  @include bp-tablet {
+    padding-bottom: 76px;
+  }
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 

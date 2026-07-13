@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sun, Moon, Plus, SlidersHorizontal } from 'lucide-react'
@@ -17,8 +17,14 @@ function todayLabel() {
 }
 
 export function AppLayout() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => localStorage.getItem('ft-sidebar') === 'collapsed',
+  )
   const [addOpen, setAddOpen] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem('ft-sidebar', sidebarCollapsed ? 'collapsed' : 'expanded')
+  }, [sidebarCollapsed])
   const { theme, toggleTheme } = useTheme()
   const { filterOpen } = useMobileFilter()
   const location = useLocation()
