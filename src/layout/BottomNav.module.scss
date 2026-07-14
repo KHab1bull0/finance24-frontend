@@ -9,9 +9,11 @@
     grid-template-columns: repeat(3, 1fr);
     background: var(--bg-elev);
     border-top: 1px solid var(--border);
+    // The bottom inset was missing while left/right were handled, so the labels
+    // sat under the iPhone home indicator.
     padding: 0
              max(0px, env(safe-area-inset-right))
-             0
+             max(0px, env(safe-area-inset-bottom))
              max(0px, env(safe-area-inset-left));
     flex-shrink: 0;
     z-index: 30;

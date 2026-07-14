@@ -4,7 +4,11 @@
 .app {
   display: grid;
   grid-template-columns: $sidebar-w-expanded 1fr;
-  height: 100vh;
+  // 100vh is the *large* viewport: with viewport-fit=cover it includes the area
+  // behind the iOS URL bar, so .app grew taller than the visible #root and the
+  // bottom nav was clipped away. dvh tracks the visible viewport instead.
+  height: 100vh; // fallback for browsers without dvh
+  height: 100dvh;
   overflow: hidden;
 
   &.collapsed {
@@ -85,6 +89,10 @@
 
 .scroll {
   flex: 1;
+  // A flex-column child defaults to min-height: auto, so it refuses to shrink
+  // below its content: long pages grew this box instead of scrolling inside it,
+  // shoving the bottom nav further off-screen.
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
