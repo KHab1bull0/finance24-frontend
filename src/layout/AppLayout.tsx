@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import clsx from 'clsx'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sun, Moon, Plus, SlidersHorizontal } from 'lucide-react'
@@ -17,14 +17,8 @@ function todayLabel() {
 }
 
 export function AppLayout() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => localStorage.getItem('ft-sidebar') === 'collapsed',
-  )
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
-
-  useEffect(() => {
-    localStorage.setItem('ft-sidebar', sidebarCollapsed ? 'collapsed' : 'expanded')
-  }, [sidebarCollapsed])
   const { theme, toggleTheme } = useTheme()
   const { filterOpen } = useMobileFilter()
   const location = useLocation()
@@ -44,14 +38,15 @@ export function AppLayout() {
             <span className={s.mheaderDate}>{todayLabel()}</span>
           </div>
           <div className={s.mheaderActions}>
-            {isTransactions && filterOpen && (
+            {isTransactions && filterOpen ? (
               <button className={s.iconBtn} onClick={filterOpen} aria-label="Open filters">
                 <SlidersHorizontal size={18} />
               </button>
+            ) : (
+              <button className={s.iconBtn} onClick={toggleTheme} aria-label="Toggle theme">
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
             )}
-            <button className={s.iconBtn} onClick={toggleTheme} aria-label="Toggle theme">
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
           </div>
         </header>
 

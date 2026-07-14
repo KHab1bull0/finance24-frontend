@@ -32,15 +32,9 @@ const DialogContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg max-h-screen overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6 focus:outline-none',
+        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg max-h-screen overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6',
         className,
       )}
-      // Focus the panel itself instead of the first field: keeps the focus trap
-      // active without ringing an input or raising the mobile keyboard on open.
-      onOpenAutoFocus={(e) => {
-        e.preventDefault()
-        ;(e.currentTarget as HTMLElement).focus({ preventScroll: true })
-      }}
       {...props}
     >
       {children}
