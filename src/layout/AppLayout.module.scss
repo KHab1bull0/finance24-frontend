@@ -102,11 +102,20 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 
-  // The FAB is position:fixed 80px above the viewport bottom, i.e. it floats
-  // over the last ~68px of this scroll box. Without this the final row's
-  // edit/delete buttons sat underneath it.
+  // The FAB is position:fixed at 80px + inset above the viewport bottom and is
+  // 52px tall, while the nav below is 52px + the same inset. The inset cancels
+  // out, leaving the FAB floating over the last 80px of this box; without the
+  // reserve the final row's edit/delete buttons sat underneath it.
   @include bp-tablet {
-    padding-bottom: 76px;
+    padding-bottom: 88px;
+  }
+}
+
+// The add/edit form routes hide the FAB, so the reserve above would just be
+// dead space at the bottom of those pages.
+.scrollNoFab {
+  @include bp-tablet {
+    padding-bottom: 0;
   }
 
   &::-webkit-scrollbar { width: 10px; }
@@ -128,8 +137,12 @@
   @include bp-tablet {
     display: flex;
     position: fixed;
-    bottom: calc(80px + env(safe-area-inset-bottom));
-    right: 20px;
+    // Fallbacks matter here: without one, an unsupported env() invalidates the
+    // whole calc() and bottom falls back to auto, throwing the FAB to the top.
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    // The nav pads its left/right insets but the FAB did not, so in landscape
+    // on a notched device it drifted under the rounded corner.
+    right: calc(20px + env(safe-area-inset-right, 0px));
     width: 52px;
     height: 52px;
     border-radius: $radius-pill;

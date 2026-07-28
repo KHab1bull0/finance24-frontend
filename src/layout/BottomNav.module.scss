@@ -11,10 +11,14 @@
     border-top: 1px solid var(--border);
     // The bottom inset was missing while left/right were handled, so the labels
     // sat under the iPhone home indicator.
+    //
+    // env(x, 0px) rather than max(0px, env(x)): the inset is never negative, so
+    // max() bought nothing, and if env() were unsupported the invalid max()
+    // would drop the whole shorthand — losing the left/right insets too.
     padding: 0
-             max(0px, env(safe-area-inset-right))
-             max(0px, env(safe-area-inset-bottom))
-             max(0px, env(safe-area-inset-left));
+             env(safe-area-inset-right, 0px)
+             env(safe-area-inset-bottom, 0px)
+             env(safe-area-inset-left, 0px);
     flex-shrink: 0;
     z-index: 30;
   }
@@ -29,13 +33,17 @@
   background: transparent;
   border: none;
   color: var(--fg-muted);
-  cursor: pointer;
   font-family: inherit;
   font-size: 11px;
   font-weight: 500;
-  padding: 10px 0;
+  // line-height was inherited from body as a computed 22px, so an 11px label
+  // reserved a 22px line box — 11px of dead space in every item. That alone
+  // made the bar 66px tall before the safe-area inset was added, which read as
+  // though the whole nav had been pushed upwards.
+  line-height: 1;
+  padding: 8px 0;
   width: 100%;
-  min-height: 48px;
+  min-height: 44px;
   text-decoration: none;
 
   &.active { color: var(--primary); }

@@ -47,7 +47,7 @@ export function AppLayout() {
           </div>
         </header>
 
-        <div className={s.scroll}>
+        <div className={clsx(s.scroll, isTransactionForm && s.scrollNoFab)}>
           <Outlet />
         </div>
 
