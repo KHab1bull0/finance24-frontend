@@ -31,7 +31,9 @@ const AlertDialogContent = forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-6 shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0',
+        'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+        'w-[calc(100%-2rem)] max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain',
+        'rounded-lg border bg-background p-6 shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0',
         className,
       )}
       {...props}

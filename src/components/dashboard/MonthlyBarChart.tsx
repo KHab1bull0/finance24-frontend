@@ -2,14 +2,14 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import type { MonthPoint } from '@/api/stats'
+import { formatAmount, formatAxis, formatMonthShort, CURRENCY } from '@/lib/format'
 import s from './MonthlyBarChart.module.scss'
 
-const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
-
-function shortMonth(yyyyMM: string) {
-  const [y, m] = yyyyMM.split('-')
-  return new Date(+y, +m - 1).toLocaleDateString('en-US', { month: 'short' })
-}
+// Recharts renders these into SVG fill attributes, so they have to be literal
+// colours rather than var(--success)/var(--danger). Declared once and shared
+// with the legend so the two can't drift apart.
+const INCOME_COLOR = '#22C55E'
+const EXPENSE_COLOR = '#EF4444'
 
 interface TooltipEntry { name: string; value: number; color: string }
 interface CustomTooltipProps { active?: boolean; payload?: TooltipEntry[]; label?: string }
@@ -21,7 +21,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 6 }}>{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color, margin: '2px 0', fontVariantNumeric: 'tabular-nums' }}>
-          {p.name}: {fmt.format(p.value ?? 0)}
+          {p.name}: {formatAmount(p.value ?? 0)} {CURRENCY}
         </p>
       ))}
     </div>
@@ -33,7 +33,7 @@ interface Props {
 }
 
 export function MonthlyBarChart({ data }: Props) {
-  const chartData = data.map((d) => ({ ...d, month: shortMonth(d.month) }))
+  const chartData = data.map((d) => ({ ...d, month: formatMonthShort(d.month) }))
   const hasData = data.some((d) => d.income > 0 || d.expense > 0)
 
   return (
@@ -41,8 +41,8 @@ export function MonthlyBarChart({ data }: Props) {
       <div className={s.cardHead}>
         <h2 className={s.h3}>Last 6 months</h2>
         <div className={s.barLegend}>
-          <span><span className={s.dot} style={{ background: '#22c55e' }} />Income</span>
-          <span><span className={s.dot} style={{ background: '#ef4444' }} />Expense</span>
+          <span><span className={s.dot} style={{ background: INCOME_COLOR }} />Income</span>
+          <span><span className={s.dot} style={{ background: EXPENSE_COLOR }} />Expense</span>
         </div>
       </div>
       {!hasData ? (
@@ -61,15 +61,17 @@ export function MonthlyBarChart({ data }: Props) {
               tickLine={false}
             />
             <YAxis
-              tickFormatter={(v: number) => fmt.format(v)}
+              // Compact notation ("1,2 mln"): full so'm figures overflowed the
+              // fixed axis width on phones.
+              tickFormatter={formatAxis}
               tick={{ fontSize: 11, fill: 'var(--fg-muted)' }}
               axisLine={false}
               tickLine={false}
-              width={68}
+              width={48}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--row-hover)', radius: 4 }} />
-            <Bar dataKey="income"  name="Income"  fill="#22c55e" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="income"  name="Income"  fill={INCOME_COLOR}  radius={[4, 4, 0, 0]} />
+            <Bar dataKey="expense" name="Expense" fill={EXPENSE_COLOR} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}

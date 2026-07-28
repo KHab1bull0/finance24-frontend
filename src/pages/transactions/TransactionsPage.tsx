@@ -112,6 +112,7 @@ export function TransactionsPage() {
           hasMore={!!hasNextPage}
           isFetchingMore={isFetchingNextPage}
           onLoadMore={fetchNextPage}
+          isFiltered={Object.values(filters).some(Boolean)}
         />
       )}
 

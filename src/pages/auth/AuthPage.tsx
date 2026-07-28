@@ -58,7 +58,7 @@ export function AuthPage() {
         <div className={s.logoMark}>
           <Wallet size={18} />
         </div>
-        <span className={s.authBrandName}>Finance Tracker</span>
+        <span className={s.authBrandName}>Finance24</span>
       </div>
 
       <div className={s.authCard}>
@@ -114,7 +114,7 @@ export function AuthPage() {
             </div>
           </label>
 
-          {error && <div className={s.authError}>{error}</div>}
+          {error && <div className={s.authError} role="alert">{error}</div>}
 
           <button type="submit" className={s.btnPrimary} disabled={loading}>
             {loading ? 'Please wait…' : isLogin ? 'Sign in' : 'Create account'}

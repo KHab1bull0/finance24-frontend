@@ -188,7 +188,7 @@ export function SettingsPage() {
               />
             </div>
           </label>
-          {pwError && <div className={s.formError}>{pwError}</div>}
+          {pwError && <div className={s.formError} role="alert">{pwError}</div>}
           <div>
             <button type="submit" className={s.btnSecondary} disabled={pwLoading}>
               {pwLoading ? 'Saving…' : 'Update password'}
@@ -207,7 +207,7 @@ export function SettingsPage() {
             <div className={s.avatar}>{initial}</div>
             <div>
               <div className={s.rowTitle}>{user?.username}</div>
-              <div className={s.rowSub}>Finance Tracker account</div>
+              <div className={s.rowSub}>Finance24 account</div>
             </div>
           </div>
           <button className={s.btnDestructive} onClick={logout}>

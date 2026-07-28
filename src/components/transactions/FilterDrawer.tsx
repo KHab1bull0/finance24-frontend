@@ -26,6 +26,17 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
   // Sync draft to current filters each time the drawer opens
   useEffect(() => { if (open) setDraft(filters) }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // This is a hand-rolled drawer rather than a Radix primitive, so Escape has to
+  // be wired up explicitly — it previously did nothing.
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open, onClose])
+
   function handleApply() {
     onApply(draft)
     onClose()
@@ -41,7 +52,15 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
         className={clsx(s.drawerOverlay, open && s.open)}
         onClick={onClose}
       />
-      <div className={clsx(s.drawer, open && s.open)}>
+      {/* inert keeps the off-screen drawer out of the tab order — its inputs
+          were still focusable while it was closed. */}
+      <div
+        className={clsx(s.drawer, open && s.open)}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Filters"
+        inert={!open}
+      >
         <div className={s.drawerHead}>
           <span className={s.drawerTitle}>Filters</span>
           <button className={s.iconBtn} onClick={onClose} aria-label="Close filters">
@@ -67,7 +86,7 @@ export function FilterDrawer({ open, onClose, filters, onApply, categories }: Pr
 
           <div className={s.field}>
             <span className={s.fieldLabel}>Search</span>
-            <div className={s.filterSearch} style={{ height: 44 }}>
+            <div className={s.filterSearch}>
               <Search size={15} />
               <input
                 className={s.filterInput}

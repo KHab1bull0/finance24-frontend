@@ -4,11 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { createCategory, updateCategory, type Category } from '@/api/categories'
 import { toast } from '@/components/ui/toast'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { cn } from '@/lib/utils'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import s from './AddCategoryDialog.module.scss'
 
 const COLOR_PALETTE = [
@@ -22,6 +18,11 @@ const EMOJI_LIST = [
   '🛒','🏠','🚗','✈️','🍔','🎮','📚','🏥',
   '🎓','👔','🍽️','☕','🎵','🎬','💡','📱',
   '💻','🏋️','🏃','💊','🎁','🔖','🌿','🐾',
+]
+
+const TYPE_TABS = [
+  { value: 'expense' as const, label: 'Expense' },
+  { value: 'income'  as const, label: 'Income'  },
 ]
 
 interface Props {
@@ -79,81 +80,90 @@ export function AddCategoryDialog({ open, onOpenChange, category }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent className="h-screen">
+      {/* className="h-screen" used to force this short form to a full 100vh box. */}
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Type — uses module scss */}
+        <form onSubmit={handleSubmit} className={s.form}>
+          {/* Type */}
           <div className={s.tabs}>
-            {(['expense', 'income'] as const).map((t) => (
+            {TYPE_TABS.map(({ value, label }) => (
               <button
-                key={t} type="button" onClick={() => setType(t)}
-                className={clsx(s.tab, type === t && s.active)}
+                key={value} type="button" onClick={() => setType(value)}
+                className={clsx(s.tab, type === value && s.active)}
               >
-                {t}
+                {label}
               </button>
             ))}
           </div>
 
-          {/* Name — uses shadcn/Tailwind */}
-          <div className="space-y-1.5">
-            <Label htmlFor="cat-name">Name</Label>
-            <Input
-              id="cat-name" placeholder="e.g. Groceries" value={name}
-              onChange={(e) => setName(e.target.value)} maxLength={100} required
-              className="border-0 bg-muted"
-            />
-          </div>
+          {/* Name */}
+          <label className={s.field}>
+            <span className={s.fieldLabel}>Name</span>
+            <div className={s.inputWrap}>
+              <input
+                className={s.input}
+                placeholder="e.g. Groceries"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={100}
+                required
+              />
+            </div>
+          </label>
 
-          {/* Color palette — uses shadcn/Tailwind */}
-          <div className="space-y-1.5">
-            <Label>Color</Label>
-            <div className="flex flex-wrap gap-2">
+          {/* Colour */}
+          <div className={s.field}>
+            <span className={s.fieldLabel}>Color</span>
+            <div className={s.swatchRow}>
               {COLOR_PALETTE.map((c) => (
                 <button
-                  key={c} type="button" title={c}
+                  key={c}
+                  type="button"
+                  title={c}
+                  aria-label={`Color ${c}`}
+                  aria-pressed={color === c}
                   onClick={() => setColor(c)}
-                  className={cn(
-                    'w-7 h-7 rounded-full border-2 transition-transform hover:scale-110',
-                    color === c ? 'border-foreground scale-110' : 'border-transparent',
-                  )}
+                  className={clsx(s.swatch, color === c && s.active)}
                   style={{ backgroundColor: c }}
                 />
               ))}
             </div>
           </div>
 
-          {/* Emoji picker — uses shadcn/Tailwind */}
-          <div className="space-y-1.5">
-            <Label>Icon</Label>
-            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto rounded-md bg-muted p-2">
+          {/* Icon */}
+          <div className={s.field}>
+            <span className={s.fieldLabel}>Icon</span>
+            <div className={s.emojiGrid}>
               {EMOJI_LIST.map((e) => (
                 <button
-                  key={e} type="button" title={e}
+                  key={e}
+                  type="button"
+                  title={e}
+                  aria-label={`Icon ${e}`}
+                  aria-pressed={icon === e}
                   onClick={() => setIcon(e)}
-                  className={cn(
-                    'w-8 h-8 flex items-center justify-center text-lg rounded transition-colors hover:bg-muted',
-                    icon === e && 'bg-muted ring-2 ring-ring',
-                  )}
+                  className={clsx(s.emoji, icon === e && s.active)}
                 >
                   {e}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Selected: {icon}</p>
           </div>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <div className={s.formError} role="alert">{error}</div>}
 
-          <DialogFooter className="flex-row justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={loading} className="gap-2">
+          <div className={s.formActions}>
+            <button type="button" className={s.btnSecondary} onClick={() => onOpenChange(false)}>
+              Cancel
+            </button>
+            <button type="submit" className={s.btnPrimary} disabled={loading}>
               {!isEdit && <Plus size={14} />}
               {isEdit ? (loading ? 'Saving…' : 'Save') : (loading ? 'Creating…' : 'Create')}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

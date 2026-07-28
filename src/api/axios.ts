@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+// .env.production ends with a slash, which produced a double-slashed
+// "https://host//api". Trim it here so the URL is correct either way.
 const baseURL = import.meta.env.PROD
-  ? `${import.meta.env.VITE_API_URL}/api`
+  ? `${String(import.meta.env.VITE_API_URL).replace(/\/+$/, '')}/api`
   : '/api'
 
 const api = axios.create({ baseURL })

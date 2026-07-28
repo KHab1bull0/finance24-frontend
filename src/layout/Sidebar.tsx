@@ -28,7 +28,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <div className={s.logoMark}>
             <Wallet size={18} />
           </div>
-          {!collapsed && <span className={s.logoWord}>Finance</span>}
+          {!collapsed && <span className={s.logoWord}>Finance24</span>}
         </div>
         {!collapsed && (
           <button className={s.collapseBtn} onClick={onToggle} aria-label="Collapse sidebar">

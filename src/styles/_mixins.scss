@@ -80,7 +80,7 @@
 
   &:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    box-shadow: 0 0 0 3px var(--ring-soft);
   }
 }
 
@@ -106,7 +106,12 @@
 }
 
 @mixin tab-base {
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // 6px vertical padding left these ~29px tall — too small to hit reliably.
+  padding: 8px 14px;
+  min-height: 36px;
   font-size: 13px;
   font-weight: 500;
   border-radius: $radius-sm;
@@ -117,4 +122,18 @@
   font-family: inherit;
   transition: background $t-fast, color $t-fast, box-shadow $t-fast;
   white-space: nowrap;
+
+  @include bp-tablet { min-height: 40px; }
+}
+
+/// Grows a small control's touch target to ~44px without changing its visual
+/// size or disturbing the surrounding layout.
+@mixin touch-target($bleed: 6px) {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -#{$bleed};
+  }
 }

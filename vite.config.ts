@@ -21,7 +21,9 @@ export default defineConfig({
         short_name: "Finance24",
         description: "Personal finance tracker",
         theme_color: "#16A34A",
-        background_color: "#14532D",
+        // Splash background must match the app's default (light) --bg, otherwise
+        // launch goes dark-green -> white on every cold start.
+        background_color: "#F8FAFC",
         display: "standalone",
         display_override: ["standalone", "fullscreen"],
         orientation: "portrait",
@@ -78,6 +80,17 @@ export default defineConfig({
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
             },
           },
+          {
+            // The stylesheet above was cached but the actual .woff2 files live on
+            // gstatic — without this the PWA lost Inter entirely when offline.
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-webfonts",
+              cacheableResponse: { statuses: [0, 200] },
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
         ],
       },
     }),
@@ -91,7 +104,7 @@ export default defineConfig({
     port: 4040,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3005', // must match backend/.env PORT
         changeOrigin: true,
       },
     },

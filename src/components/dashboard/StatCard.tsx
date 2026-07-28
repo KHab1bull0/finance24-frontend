@@ -1,14 +1,16 @@
 import clsx from 'clsx'
 import type { LucideIcon } from 'lucide-react'
+import { formatAmount, CURRENCY } from '@/lib/format'
 import s from './StatCard.module.scss'
-
-const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 interface StatCardProps {
   title: string
   value: number
   icon: LucideIcon
   tone: 'brand' | 'success' | 'danger'
+  /** Period the figure covers. The card used to hardcode "All time" while the
+   *  dashboard was already scoped to the selected month. */
+  period: string
 }
 
 const toneIconClass: Record<string, string> = {
@@ -23,7 +25,7 @@ const toneNumClass: Record<string, string> = {
   danger:  s.toneDangerNum,
 }
 
-export function StatCard({ title, value, icon: Icon, tone }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, tone, period }: StatCardProps) {
   return (
     <div className={clsx(s.card, s.statCard)}>
       <div className={s.statHead}>
@@ -33,9 +35,10 @@ export function StatCard({ title, value, icon: Icon, tone }: StatCardProps) {
         </span>
       </div>
       <div className={clsx(s.statNum, toneNumClass[tone])}>
-        {value < 0 ? '−' : ''}{fmt.format(Math.abs(value))}
+        {value < 0 ? '−' : ''}{formatAmount(Math.abs(value))}
+        <span className={s.statCurrency}>{CURRENCY}</span>
       </div>
-      <div className={s.statDelta}>All time</div>
+      <div className={s.statDelta}>{period}</div>
     </div>
   )
 }

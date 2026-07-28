@@ -2,16 +2,12 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, TrendingDown, Wallet, RefreshCw } from 'lucide-react'
 import { fetchDashboard } from '@/api/stats'
+import { currentMonth, formatFullDate, formatMonthLong } from '@/lib/format'
 import { StatCard, StatCardSkeleton } from '@/components/dashboard/StatCard'
 import { MonthlyBarChart, MonthlyBarChartSkeleton } from '@/components/dashboard/MonthlyBarChart'
 import { CategoryDonutChart, CategoryDonutChartSkeleton } from '@/components/dashboard/CategoryDonutChart'
 import { RecentTransactions, RecentTransactionsSkeleton } from '@/components/dashboard/RecentTransactions'
 import s from './DashboardPage.module.scss'
-
-function currentMonth(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-}
 
 export function DashboardPage() {
   const [month, setMonth] = useState<string>(currentMonth)
@@ -38,9 +34,9 @@ export function DashboardPage() {
     )
   }
 
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  })
+  const today = formatFullDate(new Date())
+  // Every figure below is scoped to `month` by the backend, so label it as such.
+  const periodLabel = formatMonthLong(month)
 
   return (
     <div className={s.page}>
@@ -79,9 +75,9 @@ export function DashboardPage() {
           </>
         ) : (
           <>
-            <StatCard title="Total Balance" value={data!.totalBalance} icon={Wallet}      tone="brand"   />
-            <StatCard title="Total Income"  value={data!.totalIncome}  icon={TrendingUp}  tone="success" />
-            <StatCard title="Total Expense" value={data!.totalExpense} icon={TrendingDown} tone="danger"  />
+            <StatCard title="Total Balance" value={data!.totalBalance} icon={Wallet}       tone="brand"   period={periodLabel} />
+            <StatCard title="Total Income"  value={data!.totalIncome}  icon={TrendingUp}   tone="success" period={periodLabel} />
+            <StatCard title="Total Expense" value={data!.totalExpense} icon={TrendingDown} tone="danger"  period={periodLabel} />
           </>
         )}
       </section>

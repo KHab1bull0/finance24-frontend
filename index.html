@@ -8,7 +8,13 @@
       viewport-fit=cover lets content extend into the notch/Dynamic Island area.
       We then use env(safe-area-inset-*) in CSS to pad away from hardware edges.
     -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!--
+      user-scalable=no was removed: it blocks pinch-zoom entirely, which fails
+      WCAG 1.4.4. iOS auto-zoom on input focus is prevented properly instead, by
+      keeping every focusable input at font-size >= 16px (see the
+      @supports (-webkit-touch-callout: none) blocks in the SCSS modules).
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!--
       iOS PWA standalone mode.
@@ -26,12 +32,43 @@
     <!-- Home screen icon — iOS requires PNG (SVG is ignored) -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Android PWA / browser theme color -->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#6366F1" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#6366F1" />
+    <!--
+      Android PWA / browser chrome colour. These match --bg in each theme so the
+      toolbar blends into the app header instead of showing a contrasting band.
+      ThemeContext keeps the active tag in sync when the user toggles the theme.
+    -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F8FAFC" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0F1117" />
     <meta name="mobile-web-app-capable" content="yes" />
 
+    <!-- Start the font handshake in parallel with the CSS bundle, not after it. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+
     <title>Finance24</title>
+
+    <!--
+      Apply the stored theme BEFORE first paint. React sets this class in an
+      effect, which runs after paint — dark-mode users saw a white flash on
+      every launch.
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('ft-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.classList.add('theme-' + t);
+        } catch (e) {
+          document.documentElement.classList.add('theme-light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

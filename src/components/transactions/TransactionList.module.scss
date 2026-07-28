@@ -85,7 +85,12 @@
   &:hover .txDel,
   &:hover .txEdit { opacity: 1; }
 
+  // Tighter on phones so the note still has room once the action buttons are
+  // grown to a real touch target.
   @include bp-mobile {
+    gap: 10px;
+    padding: 12px 10px 12px 14px;
+
     .txDel,
     .txEdit { opacity: 1; }
   }
@@ -94,7 +99,7 @@
 .txActions {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 12px;
 }
 
 .txCat {
@@ -105,20 +110,29 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .txMeta { min-width: 0; }
 
+// Without truncation a long note wrapped and blew out the row height, pushing
+// the amount and actions around.
 .txTitle {
   font-size: 14px;
   font-weight: 600;
   color: var(--fg-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .txSub {
   font-size: 12px;
   color: var(--fg-muted);
   margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .txAmt {
@@ -129,6 +143,8 @@
 
   &.amtIn  { color: var(--success); }
   &.amtOut { color: var(--danger); }
+
+  @include bp-mobile { font-size: 13px; }
 }
 
 .txDel,
@@ -145,6 +161,10 @@
   justify-content: center;
   opacity: 0;
   transition: opacity $t-fast, background $t-fast;
+
+  // 32px is well under the 44px minimum touch target. The 12px .txActions gap
+  // means the grown hit areas sit flush without overlapping.
+  @include touch-target(6px);
 
   @include bp-mobile { opacity: 1; }
 }

@@ -151,8 +151,8 @@
   width: 32px;
   height: 32px;
   border-radius: $radius-pill;
-  background: var(--brand-indigo-100);
-  color: var(--brand-indigo-700);
+  background: var(--avatar-bg);
+  color: var(--avatar-fg);
   font-weight: 600;
   font-size: 13px;
   display: flex;
@@ -160,11 +160,6 @@
   justify-content: center;
   flex-shrink: 0;
   text-transform: uppercase;
-
-  :global(.theme-dark) & {
-    background: var(--brand-indigo-900);
-    color: var(--brand-indigo-100);
-  }
 }
 
 .userMeta { min-width: 0; }

@@ -106,8 +106,8 @@
   &.amtOut { border-color: var(--danger); }
   &.error  { border-color: var(--danger); }
 
-  &.amtIn:focus-within  { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18); }
-  &.amtOut:focus-within { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+  &.amtIn:focus-within  { box-shadow: 0 0 0 3px var(--ring-soft); }
+  &.amtOut:focus-within { box-shadow: 0 0 0 3px var(--ring-danger); }
 }
 
 .amountInput {
@@ -160,7 +160,7 @@
 
   &.error {
     border-color: var(--danger);
-    &:focus-within { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+    &:focus-within { box-shadow: 0 0 0 3px var(--ring-danger); }
   }
 }
 

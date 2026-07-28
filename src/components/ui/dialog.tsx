@@ -32,7 +32,12 @@ const DialogContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg max-h-screen overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6',
+        'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+        // w-[calc(100%-2rem)] keeps a gutter on phones (w-full went edge-to-edge).
+        // max-h-[85dvh] replaces max-h-screen: 100vh is the *large* viewport on
+        // iOS, so a tall form was cut off above and below the visible area.
+        'w-[calc(100%-2rem)] max-w-lg max-h-[85dvh] overflow-y-auto overscroll-contain',
+        'rounded-lg bg-background shadow-xl transition-all data-[state=open]:opacity-100 data-[state=closed]:opacity-0 p-6',
         className,
       )}
       {...props}

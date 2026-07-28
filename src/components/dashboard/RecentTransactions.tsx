@@ -1,16 +1,8 @@
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import type { RecentTransaction } from '@/api/stats'
+import { formatSigned, formatShortDay } from '@/lib/format'
 import s from './RecentTransactions.module.scss'
-
-const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 interface Props {
   transactions: RecentTransaction[]
@@ -46,11 +38,11 @@ export function RecentTransactions({ transactions }: Props) {
               <div className={s.txMeta}>
                 <div className={s.txTitle}>{tx.note ?? tx.category.name}</div>
                 <div className={s.txSub}>
-                  {tx.category.name} · {formatDate(tx.date)}
+                  {tx.category.name} · {formatShortDay(tx.date)}
                 </div>
               </div>
               <div className={clsx(s.txAmt, tx.type === 'income' ? s.amtIn : s.amtOut)}>
-                {tx.type === 'income' ? '+' : '−'}{fmt.format(tx.amount)}
+                {formatSigned(tx.amount, tx.type)}
               </div>
             </div>
           ))

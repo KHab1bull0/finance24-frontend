@@ -37,13 +37,15 @@
   &.open { transform: translateY(0); }
 }
 
+// Rendered last, so it sits at the *bottom* edge of this top-anchored drawer.
+// The old `margin: 0 auto 12px` left it glued to the footer's border.
 .drawerHandle {
   flex-shrink: 0;
   width: 36px;
   height: 4px;
   background: var(--border-strong);
   border-radius: $radius-pill;
-  margin: 0 auto 12px;
+  margin: 10px auto 12px;
 }
 
 .drawerHead {
@@ -61,6 +63,7 @@
 }
 
 .iconBtn {
+  @include touch-target(4px);
   width: 36px;
   height: 36px;
   border-radius: $radius-md;
@@ -123,7 +126,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  // 44px: this drawer is touch-only, and the height used to be forced with an
+  // inline style that contradicted the class.
+  height: 44px;
   padding: 0 14px;
   border-radius: $radius-md;
   background: var(--bg-elev);
@@ -133,7 +138,7 @@
 
   &:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    box-shadow: 0 0 0 3px var(--ring-soft);
     color: var(--fg-strong);
   }
 }
@@ -156,7 +161,7 @@
 
 .input {
   flex: 1;
-  height: 40px;
+  height: 44px;
   padding: 0 12px;
   background: transparent;
   border: none;
@@ -188,13 +193,13 @@
 
 .btnSecondary {
   @include btn-secondary;
-  @include btn-size-md;
+  @include btn-size-lg;
   flex: 1;
 }
 
 .btnPrimary {
   @include btn-primary;
-  @include btn-size-md;
+  @include btn-size-lg;
   flex: 1;
 }
 

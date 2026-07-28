@@ -1,8 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import type { CategoryBreakdown } from '@/api/stats'
+import { formatAmount, CURRENCY } from '@/lib/format'
 import s from './CategoryDonutChart.module.scss'
-
-const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 interface PiePayload { name: string; value: number; payload: CategoryBreakdown }
 interface CustomTooltipProps { active?: boolean; payload?: PiePayload[] }
@@ -13,7 +12,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   return (
     <div className={s.card} style={{ padding: '10px 14px', fontSize: 13, minWidth: 140 }}>
       <p style={{ fontWeight: 600, color: 'var(--fg-strong)', marginBottom: 4 }}>{d.name}</p>
-      <p style={{ color: d.payload.color, fontVariantNumeric: 'tabular-nums' }}>{fmt.format(d.value ?? 0)}</p>
+      <p style={{ color: d.payload.color, fontVariantNumeric: 'tabular-nums' }}>
+        {formatAmount(d.value ?? 0)} {CURRENCY}
+      </p>
       <p style={{ color: 'var(--fg-muted)', fontSize: 11 }}>{d.payload.percentage}% of expenses</p>
     </div>
   )

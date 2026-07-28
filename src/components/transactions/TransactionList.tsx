@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { Pencil, Trash2, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { deleteTransaction, type Transaction } from '@/api/transactions'
+import { formatSigned, formatDay, formatAmount, parseApiDate, CURRENCY } from '@/lib/format'
 import { toast } from '@/components/ui/toast'
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -12,15 +13,13 @@ import {
 import { AddTransactionDialog } from './AddTransactionDialog'
 import s from './TransactionList.module.scss'
 
-const fmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
 function formatDayLabel(dateStr: string) {
-  const d = new Date(dateStr + 'T00:00:00')
+  const d = parseApiDate(dateStr)
   const today = new Date()
   const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1)
   if (d.toDateString() === today.toDateString()) return 'Today'
   if (d.toDateString() === yesterday.toDateString()) return 'Yesterday'
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  return formatDay(dateStr)
 }
 
 function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
@@ -66,7 +65,7 @@ function TransactionRow({ tx, onEdit }: { tx: Transaction; onEdit: (tx: Transact
         </div>
       </div>
       <div className={clsx(s.txAmt, tx.type === 'income' ? s.amtIn : s.amtOut)}>
-        {tx.type === 'income' ? '+' : '−'}{fmt.format(tx.amount)}
+        {formatSigned(tx.amount, tx.type)}
       </div>
       <div className={s.txActions}>
         <button
@@ -86,7 +85,7 @@ function TransactionRow({ tx, onEdit }: { tx: Transaction; onEdit: (tx: Transact
           <AlertDialogHeader>
             <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove {tx.type === 'income' ? '+' : '−'}{fmt.format(tx.amount)} ({tx.type}).
+              This will permanently remove {formatSigned(tx.amount, tx.type)} {CURRENCY} ({tx.type}).
               This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -111,9 +110,13 @@ interface Props {
   hasMore: boolean
   isFetchingMore: boolean
   onLoadMore: () => void
+  /** Whether any filter is active — decides which empty state to show. */
+  isFiltered: boolean
 }
 
-export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadMore }: Props) {
+export function TransactionList({
+  transactions, hasMore, isFetchingMore, onLoadMore, isFiltered,
+}: Props) {
   const [editing, setEditing] = useState<Transaction | null>(null)
 
   if (transactions.length === 0) {
@@ -122,8 +125,14 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
         <div className={s.emptyGlyph}>
           <Wallet size={28} />
         </div>
-        <div className={s.emptyTitle}>No transactions found</div>
-        <div className={s.emptySub}>Try adjusting your filters or add a new transaction</div>
+        <div className={s.emptyTitle}>
+          {isFiltered ? 'No matching transactions' : 'No transactions yet'}
+        </div>
+        <div className={s.emptySub}>
+          {isFiltered
+            ? 'Try adjusting or clearing your filters'
+            : 'Add your first income or expense to get started'}
+        </div>
       </div>
     )
   }
@@ -140,7 +149,7 @@ export function TransactionList({ transactions, hasMore, isFetchingMore, onLoadM
             <div className={s.dayHead}>
               <span className={s.dayLabel}>{formatDayLabel(date)}</span>
               <span className={clsx(s.dayTotal, dayTotal >= 0 ? s.amtIn : s.amtOut)}>
-                {dayTotal >= 0 ? '+' : '−'}{fmt.format(Math.abs(dayTotal))}
+                {dayTotal >= 0 ? '+' : '−'}{formatAmount(Math.abs(dayTotal))}
               </span>
             </div>
             <div className={clsx(s.card, s.txList)}>

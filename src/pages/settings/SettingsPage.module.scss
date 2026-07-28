@@ -51,12 +51,14 @@
   gap: 16px;
 }
 
+// No margin-bottom: .settingsCard is a flex column with gap: 16px, so a margin
+// here stacked on top of the gap and produced 34px of dead space.
 .cardHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .h3 {
@@ -93,9 +95,8 @@
 
 .catGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: 10px;
-  margin-top: 16px;
 }
 
 .catCard {
@@ -139,8 +140,8 @@
   width: 44px;
   height: 44px;
   border-radius: $radius-pill;
-  background: var(--brand-indigo-100);
-  color: var(--brand-indigo-700);
+  background: var(--avatar-bg);
+  color: var(--avatar-fg);
   font-weight: 600;
   font-size: 16px;
   display: flex;
@@ -148,11 +149,6 @@
   justify-content: center;
   flex-shrink: 0;
   text-transform: uppercase;
-
-  :global(.theme-dark) & {
-    background: var(--brand-indigo-900);
-    color: var(--brand-indigo-100);
-  }
 }
 
 .themeSegment {
@@ -209,8 +205,10 @@
 .segment {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 8px 14px;
+  min-height: 36px;
   border-radius: $radius-sm;
   background: transparent;
   border: none;
@@ -218,10 +216,17 @@
   font-size: 13px;
   color: var(--fg-muted);
   cursor: pointer;
+  transition: background $t-fast, color $t-fast;
 
   &.active {
     background: var(--bg-elev);
     color: var(--fg-strong);
     box-shadow: 0 1px 2px rgba(15, 17, 23, 0.08);
   }
+}
+
+// Settings was the only form left without the iOS anti-zoom rule, so focusing a
+// password field zoomed the whole page in.
+@supports (-webkit-touch-callout: none) {
+  .input { font-size: 16px; }
 }

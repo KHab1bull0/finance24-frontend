@@ -38,11 +38,10 @@ function CategoryCard({ cat, onEdit }: { cat: Category; onEdit: (cat: Category) 
         {cat.icon}
       </span>
       <div className={s.catMeta}>
+        {/* The raw hex code used to be printed here — developer detail, no value
+            to the user. The emoji chip already carries the colour. */}
         <div className={s.catName}>{cat.name}</div>
-        <div className={s.catDot}>
-          <span style={{ background: cat.color }} />
-          <code>{cat.color}</code>
-        </div>
+        <div className={s.catType}>{cat.type === 'income' ? 'Income' : 'Expense'}</div>
       </div>
       <button className={s.catEdit} onClick={() => onEdit(cat)} aria-label="Edit">
         <Pencil size={14} />

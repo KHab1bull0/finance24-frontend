@@ -6,15 +6,10 @@ import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMobileFilter } from '@/contexts/MobileFilterContext'
+import { formatHeaderDate } from '@/lib/format'
 import { AddTransactionDialog } from '@/components/transactions/AddTransactionDialog'
 import { ToastHost } from '@/components/ui/toast'
 import s from './AppLayout.module.scss'
-
-function todayLabel() {
-  return new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric',
-  })
-}
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -35,7 +30,7 @@ export function AppLayout() {
         <header className={s.mheader}>
           <div className={s.mheaderBrand}>
             <span className={s.mheaderTitle}>Finance24</span>
-            <span className={s.mheaderDate}>{todayLabel()}</span>
+            <span className={s.mheaderDate}>{formatHeaderDate(new Date())}</span>
           </div>
           <div className={s.mheaderActions}>
             {isTransactions && filterOpen ? (

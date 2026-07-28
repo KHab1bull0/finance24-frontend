@@ -222,7 +222,7 @@ export function AddTransactionDialog({ open, onOpenChange, transaction }: Props)
             </div>
           </label>
 
-          {error && <div className={s.fieldErr}>{error}</div>}
+          {error && <div className={s.fieldErr} role="alert">{error}</div>}
 
           <div className={s.formActions}>
             <button type="button" className={s.btnSecondary} onClick={() => onOpenChange(false)}>
