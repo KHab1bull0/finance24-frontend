@@ -49,6 +49,12 @@ export const fetchTransactions = async (
   return data
 }
 
+/** Used by the edit page, which may be opened from a URL with no row in hand. */
+export const fetchTransaction = async (id: string): Promise<Transaction> => {
+  const { data } = await api.get<Transaction>(`/transactions/${id}`)
+  return data
+}
+
 export const createTransaction = async (dto: CreateTransactionDto): Promise<Transaction> => {
   const { data } = await api.post<Transaction>('/transactions', dto)
   return data

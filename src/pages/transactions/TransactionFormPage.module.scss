@@ -1,0 +1,78 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.page {
+  padding: 32px;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @include bp-tablet { padding: 24px; }
+  @include bp-mobile { padding: 16px; gap: 20px; }
+}
+
+.pageHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backBtn {
+  @include touch-target(4px);
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: $radius-md;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background $t-fast;
+
+  &:hover { background: var(--icon-btn-hover); }
+}
+
+.h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg-strong);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include bp-mobile { font-size: 22px; line-height: 28px; }
+}
+
+.card {
+  @include card-base;
+}
+
+.state {
+  @include empty-base;
+}
+
+.stateTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+
+.stateSub {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.btnSecondary {
+  @include btn-secondary;
+  @include btn-size-sm;
+  margin-top: 8px;
+}

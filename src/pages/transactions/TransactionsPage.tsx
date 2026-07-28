@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { Plus, RefreshCw } from 'lucide-react'
 import { fetchTransactions, type TransactionFilters, type PaginatedTransactions } from '@/api/transactions'
 import { fetchCategories } from '@/api/categories'
 import { useMobileFilter } from '@/contexts/MobileFilterContext'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { AddTransactionDialog } from '@/components/transactions/AddTransactionDialog'
 import { TransactionFilters as FiltersBar } from '@/components/transactions/TransactionFilters'
 import { FilterDrawer } from '@/components/transactions/FilterDrawer'
@@ -43,6 +45,14 @@ export function TransactionsPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [filters, setFilters] = useState<TransactionFilters>({})
   const { setFilterOpen } = useMobileFilter()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
+
+  // Touch layouts get a full page; desktop keeps the dialog.
+  function openAdd() {
+    if (isMobile) navigate('/transactions/new')
+    else setDialogOpen(true)
+  }
 
   useEffect(() => {
     setFilterOpen(() => setDrawerOpen(true))
@@ -80,7 +90,7 @@ export function TransactionsPage() {
             {transactions.length > 0 ? `${transactions.length} records` : 'Track your income & expenses'}
           </div>
         </div>
-        <button className={s.btnPrimary} onClick={() => setDialogOpen(true)}>
+        <button className={s.btnPrimary} onClick={openAdd}>
           <Plus size={14} /> Add
         </button>
       </header>

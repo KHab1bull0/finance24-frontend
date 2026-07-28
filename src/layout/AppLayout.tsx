@@ -1,23 +1,25 @@
 import { useState } from 'react'
 import clsx from 'clsx'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Sun, Moon, Plus, SlidersHorizontal } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMobileFilter } from '@/contexts/MobileFilterContext'
 import { formatHeaderDate } from '@/lib/format'
-import { AddTransactionDialog } from '@/components/transactions/AddTransactionDialog'
 import { ToastHost } from '@/components/ui/toast'
 import s from './AppLayout.module.scss'
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [addOpen, setAddOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const { filterOpen } = useMobileFilter()
   const location = useLocation()
+  const navigate = useNavigate()
   const isTransactions = location.pathname === '/transactions'
+  // /transactions/new and /transactions/:id/edit are the add/edit form itself —
+  // offering "add" from there makes no sense.
+  const isTransactionForm = location.pathname.startsWith('/transactions/')
 
   return (
     <div className={clsx(s.app, sidebarCollapsed && s.collapsed)}>
@@ -49,12 +51,18 @@ export function AppLayout() {
           <Outlet />
         </div>
 
-        <button className={s.fab} onClick={() => setAddOpen(true)} aria-label="Add transaction">
-          <Plus size={22} />
-        </button>
+        {/* The FAB is itself tablet-and-below only, so it always routes. */}
+        {!isTransactionForm && (
+          <button
+            className={s.fab}
+            onClick={() => navigate('/transactions/new')}
+            aria-label="Add transaction"
+          >
+            <Plus size={22} />
+          </button>
+        )}
 
         <BottomNav />
-        <AddTransactionDialog open={addOpen} onOpenChange={setAddOpen} />
       </main>
 
       <ToastHost />

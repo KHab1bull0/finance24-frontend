@@ -31,6 +31,12 @@ const DialogContent = forwardRef<
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
+      // Radix focuses the first focusable child on open and restores focus to
+      // the trigger on close. Both are suppressed: nothing should take focus
+      // until the user asks for it by tapping. Listed before {...props} so a
+      // caller can still opt back in.
+      onOpenAutoFocus={(e) => e.preventDefault()}
+      onCloseAutoFocus={(e) => e.preventDefault()}
       className={cn(
         'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
         // w-[calc(100%-2rem)] keeps a gutter on phones (w-full went edge-to-edge).

@@ -7,7 +7,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/layout/AppLayout'
 import { AuthPage } from '@/pages/auth'
 import { DashboardPage } from '@/pages/dashboard'
-import { TransactionsPage } from '@/pages/transactions'
+import { TransactionsPage, TransactionFormPage } from '@/pages/transactions'
 import { SettingsPage } from '@/pages/settings'
 
 const queryClient = new QueryClient({
@@ -32,6 +32,9 @@ export default function App() {
                 <Route element={<AppLayout />}>
                   <Route index element={<DashboardPage />} />
                   <Route path="transactions" element={<TransactionsPage />} />
+                  {/* Touch-only routes; desktop opens the dialog instead. */}
+                  <Route path="transactions/new" element={<TransactionFormPage />} />
+                  <Route path="transactions/:id/edit" element={<TransactionFormPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
               </Route>

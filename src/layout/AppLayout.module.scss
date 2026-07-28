@@ -4,11 +4,9 @@
 .app {
   display: grid;
   grid-template-columns: $sidebar-w-expanded 1fr;
-  // 100vh is the *large* viewport: with viewport-fit=cover it includes the area
-  // behind the iOS URL bar, so .app grew taller than the visible #root and the
-  // bottom nav was clipped away. dvh tracks the visible viewport instead.
-  height: 100vh; // fallback for browsers without dvh
-  height: 100dvh;
+  // Inherits the single dvh value set on <html> in index.css. Declaring dvh
+  // again here is what let .app and #root disagree in the first place.
+  height: 100%;
   overflow: hidden;
 
   &.collapsed {

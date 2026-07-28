@@ -193,14 +193,22 @@
     touch-action: manipulation;
   }
 
+  /*
+    ONE source of truth for the app height.
+
+    This used to be -webkit-fill-available here while .app used 100dvh. Those
+    two never agree on iOS -- -webkit-fill-available tracks the *large*
+    viewport, 100dvh the *visible* one -- so #root ended up taller than .app
+    and left a dead band under the bottom nav. Everything below now inherits
+    this single value via height: 100%.
+  */
   html {
-    height: 100%;
-    height: -webkit-fill-available;
+    height: 100vh; /* fallback for browsers without dvh */
+    height: 100dvh;
     overflow: hidden;
   }
   body {
     height: 100%;
-    min-height: -webkit-fill-available;
     overflow: hidden;
     overscroll-behavior: none;
     background: var(--bg);

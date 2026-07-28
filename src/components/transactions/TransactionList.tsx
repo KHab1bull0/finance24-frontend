@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import clsx from 'clsx'
+import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { deleteTransaction, type Transaction } from '@/api/transactions'
 import { formatSigned, formatDay, formatAmount, parseApiDate, CURRENCY } from '@/lib/format'
 import { toast } from '@/components/ui/toast'
@@ -118,6 +120,14 @@ export function TransactionList({
   transactions, hasMore, isFetchingMore, onLoadMore, isFiltered,
 }: Props) {
   const [editing, setEditing] = useState<Transaction | null>(null)
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
+
+  // Touch layouts get a full page; desktop keeps the dialog.
+  function openEdit(tx: Transaction) {
+    if (isMobile) navigate(`/transactions/${tx.id}/edit`)
+    else setEditing(tx)
+  }
 
   if (transactions.length === 0) {
     return (
@@ -153,7 +163,7 @@ export function TransactionList({
               </span>
             </div>
             <div className={clsx(s.card, s.txList)}>
-              {txs.map((tx) => <TransactionRow key={tx.id} tx={tx} onEdit={setEditing} />)}
+              {txs.map((tx) => <TransactionRow key={tx.id} tx={tx} onEdit={openEdit} />)}
             </div>
           </div>
         )
