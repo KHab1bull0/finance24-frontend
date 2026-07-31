@@ -109,15 +109,11 @@
   @include bp-tablet {
     padding-bottom: 88px;
   }
-}
 
-// The add/edit form routes hide the FAB, so the reserve above would just be
-// dead space at the bottom of those pages.
-.scrollNoFab {
-  @include bp-tablet {
-    padding-bottom: 0;
-  }
-
+  // These belong to .scroll. A previous edit inserted a .scrollNoFab block
+  // above them and left them nested inside it, so the custom scrollbar only
+  // applied on the add/edit routes — which are touch-only, i.e. exactly where
+  // there is no scrollbar to style. Desktop had none at all.
   &::-webkit-scrollbar { width: 10px; }
   &::-webkit-scrollbar-thumb {
     background: var(--border);

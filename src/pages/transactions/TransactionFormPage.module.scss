@@ -1,26 +1,33 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
+// Direct child of #root (this route is not nested in AppLayout), so 100% is
+// the measured --app-h from index.css. Same contract as .app: a fixed-height
+// flex column whose middle child does the scrolling, so the page can never
+// grow past the fold.
 .page {
-  padding: 32px;
-  max-width: 640px;
-  margin: 0 auto;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-
-  @include bp-tablet { padding: 24px; }
-  @include bp-mobile { padding: 16px; gap: 20px; }
+  overflow: hidden;
+  background: var(--bg);
 }
 
-.pageHead {
+.head {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
 .backBtn {
-  @include touch-target(4px);
+  @include touch-target(4px); // 36px visual -> 44px hit area
   width: 36px;
   height: 36px;
   flex-shrink: 0;
@@ -38,9 +45,9 @@
 }
 
 .h1 {
-  font-size: var(--fs-h1);
-  line-height: var(--lh-h1);
-  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--fg-strong);
   margin: 0;
@@ -48,12 +55,26 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  @include bp-mobile { font-size: 22px; line-height: 28px; }
 }
 
-.card {
-  @include card-base;
+.body {
+  flex: 1;
+  // Without this a flex child refuses to shrink below its content, so a long
+  // form would grow the column instead of scrolling inside it.
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding: 20px 16px;
+  padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 24px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.inner {
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .state {

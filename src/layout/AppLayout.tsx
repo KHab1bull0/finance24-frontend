@@ -7,7 +7,6 @@ import { BottomNav } from './BottomNav'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMobileFilter } from '@/contexts/MobileFilterContext'
 import { formatHeaderDate } from '@/lib/format'
-import { ToastHost } from '@/components/ui/toast'
 import s from './AppLayout.module.scss'
 
 export function AppLayout() {
@@ -17,9 +16,6 @@ export function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const isTransactions = location.pathname === '/transactions'
-  // /transactions/new and /transactions/:id/edit are the add/edit form itself —
-  // offering "add" from there makes no sense.
-  const isTransactionForm = location.pathname.startsWith('/transactions/')
 
   return (
     <div className={clsx(s.app, sidebarCollapsed && s.collapsed)}>
@@ -47,25 +43,21 @@ export function AppLayout() {
           </div>
         </header>
 
-        <div className={clsx(s.scroll, isTransactionForm && s.scrollNoFab)}>
+        <div className={s.scroll}>
           <Outlet />
         </div>
 
         {/* The FAB is itself tablet-and-below only, so it always routes. */}
-        {!isTransactionForm && (
-          <button
-            className={s.fab}
-            onClick={() => navigate('/transactions/new')}
-            aria-label="Add transaction"
-          >
-            <Plus size={22} />
-          </button>
-        )}
+        <button
+          className={s.fab}
+          onClick={() => navigate('/transactions/new')}
+          aria-label="Add transaction"
+        >
+          <Plus size={22} />
+        </button>
 
         <BottomNav />
       </main>
-
-      <ToastHost />
     </div>
   )
 }
