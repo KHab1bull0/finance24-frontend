@@ -194,17 +194,29 @@
   }
 
   /*
-    ONE source of truth for the app height.
+    ONE source of truth for the app height. Everything below inherits it with
+    height: 100%.
 
-    This used to be -webkit-fill-available here while .app used 100dvh. Those
-    two never agree on iOS -- -webkit-fill-available tracks the *large*
-    viewport, 100dvh the *visible* one -- so #root ended up taller than .app
-    and left a dead band under the bottom nav. Everything below now inherits
-    this single value via height: 100%.
+    --app-h is the measured visualViewport height: seeded in index.html before
+    first paint, kept current by src/lib/viewport.ts.
+
+    Why not just 100dvh: with viewport-fit=cover the dvh unit is not reliably
+    the *visible* height -- engines differ on whether the strip behind the
+    system navigation / home-indicator bar counts. When it does, <html> renders
+    taller than the fold and the browser scrolls the visual viewport to
+    compensate: a dead band along the bottom with the layout pushed off the
+    top. Nothing inside the tree can cause that (every box is height:100% +
+    overflow:hidden, and .scroll is flex:1/min-height:0 so a taller bottom nav
+    shrinks it rather than overflowing), which leaves the unit on <html> as the
+    only possible source.
+
+    The two declarations below it are the fallback ladder: 100dvh for a browser
+    without custom properties, 100vh for one without dvh.
   */
   html {
-    height: 100vh; /* fallback for browsers without dvh */
+    height: 100vh;
     height: 100dvh;
+    height: var(--app-h, 100dvh);
     overflow: hidden;
   }
   body {

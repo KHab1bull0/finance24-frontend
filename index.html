@@ -52,9 +52,15 @@
     <title>Finance24</title>
 
     <!--
-      Apply the stored theme BEFORE first paint. React sets this class in an
-      effect, which runs after paint — dark-mode users saw a white flash on
-      every launch.
+      Two things that must happen BEFORE first paint:
+
+      1. The stored theme. React sets this class in an effect, which runs after
+         paint — dark-mode users saw a white flash on every launch.
+      2. --app-h, the real visible viewport height. index.css sizes <html> from
+         it; seeding it here means the var() always resolves, so the shell is
+         never painted at the wrong height and never falls back to a bare
+         height:auto on an engine without dvh. src/lib/viewport.ts keeps it
+         current from there on.
     -->
     <script>
       (function () {
@@ -67,6 +73,13 @@
         } catch (e) {
           document.documentElement.classList.add('theme-light');
         }
+        try {
+          var vv = window.visualViewport;
+          var h = (vv && vv.scale === 1 ? vv.height : 0) || window.innerHeight;
+          if (h > 0) {
+            document.documentElement.style.setProperty('--app-h', Math.round(h) + 'px');
+          }
+        } catch (e) { /* CSS falls back to 100dvh */ }
       })();
     </script>
   </head>
