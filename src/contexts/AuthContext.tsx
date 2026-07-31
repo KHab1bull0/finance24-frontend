@@ -5,6 +5,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
+import { clearApiCache } from '@/lib/pwa'
 
 interface AuthUser {
   id: string
@@ -50,6 +51,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem('token')
     setUser(null)
+    // The service worker caches API GETs so the app still renders offline.
+    // Those responses outlive the token, so without this the next person to
+    // sign in on the same phone could read the previous user's balances.
+    void clearApiCache()
   }, [])
 
   return (

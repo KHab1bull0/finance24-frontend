@@ -23,6 +23,15 @@ function extractMessage(err: unknown): string {
 
 type CatTab = 'expense' | 'income'
 
+function formatBuild(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return 'unknown'
+  return d.toLocaleString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
 function CategoriesSkeleton() {
   return (
     <div className={s.catGrid}>
@@ -50,6 +59,36 @@ export function SettingsPage() {
   const [confirmPw, setConfirmPw] = useState('')
   const [pwError, setPwError] = useState('')
   const [pwLoading, setPwLoading] = useState(false)
+  const [checking, setChecking] = useState(false)
+
+  async function handleCheckUpdate() {
+    if (!('serviceWorker' in navigator)) {
+      toast('Not running as an installed app', 'error')
+      return
+    }
+    setChecking(true)
+    try {
+      const registration = await navigator.serviceWorker.getRegistration()
+      if (!registration) {
+        toast('No service worker registered', 'error')
+        return
+      }
+      await registration.update()
+      // registerType is 'autoUpdate', so a newer worker installs and takes
+      // over by itself; the page still holds the bundle it booted with, so
+      // reload to actually land on it.
+      if (registration.installing || registration.waiting) {
+        toast('New version found — reloading…', 'success')
+        setTimeout(() => window.location.reload(), 1200)
+      } else {
+        toast('Already up to date', 'success')
+      }
+    } catch {
+      toast('Could not check for updates', 'error')
+    } finally {
+      setChecking(false)
+    }
+  }
 
   async function handleChangePassword(e: FormEvent) {
     e.preventDefault()
@@ -212,6 +251,31 @@ export function SettingsPage() {
           </div>
           <button className={s.btnDestructive} onClick={logout}>
             <LogOut size={14} /> Sign out
+          </button>
+        </div>
+      </div>
+
+      {/* About */}
+      <div className={clsx(s.card, s.settingsCard)}>
+        <div className={s.cardHead}>
+          <h2 className={s.h3}>About</h2>
+        </div>
+        <div className={s.settingsRow}>
+          <div>
+            <div className={s.rowTitle}>Version</div>
+            {/*
+              An installed app can silently keep running a build from weeks
+              ago. Showing the build it is actually on turns "did the fix
+              reach my phone?" from a guess into something you can read.
+            */}
+            <div className={s.rowSub}>Built {formatBuild(__BUILD_TIME__)}</div>
+          </div>
+          <button
+            className={s.btnSecondary}
+            onClick={handleCheckUpdate}
+            disabled={checking}
+          >
+            {checking ? 'Checking…' : 'Check for updates'}
           </button>
         </div>
       </div>

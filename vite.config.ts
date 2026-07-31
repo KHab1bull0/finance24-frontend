@@ -10,22 +10,36 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      // Enable service worker in dev so PWA can be installed from the dev server
+      // Was enabled so the PWA could be installed straight off the dev server.
+      // It also means `npm run dev` runs behind a service worker that serves
+      // its own cached copies of the very files you are editing. Given that
+      // stale caching is what hid three separate fixes from the device, dev
+      // now runs without one; test installs with `npm run build && npm run
+      // preview`, which serves a real service worker.
       devOptions: {
-        enabled: true,
-        type: "module",
+        enabled: false,
       },
       includeAssets: ["favicon.svg", "apple-touch-icon.png"],
       manifest: {
+        // Without an explicit id the install identity is derived from
+        // start_url, so ever changing start_url would register as a second,
+        // separate app rather than an update of this one.
+        id: "/",
         name: "Finance24",
         short_name: "Finance24",
         description: "Personal finance tracker",
-        theme_color: "#16A34A",
+        // Matches --bg (light) and the <meta name="theme-color"> in
+        // index.html. It was #16A34A, so an installed app launched with a
+        // green status bar sitting directly above a near-white header.
+        // ThemeContext re-points the meta tag when the theme changes.
+        theme_color: "#F8FAFC",
         // Splash background must match the app's default (light) --bg, otherwise
         // launch goes dark-green -> white on every cold start.
         background_color: "#F8FAFC",
         display: "standalone",
-        display_override: ["standalone", "fullscreen"],
+        // display_override was ["standalone", "fullscreen"]. It is evaluated in
+        // order and the first supported value wins, so "fullscreen" was
+        // unreachable and the whole field just restated `display`. Dropped.
         orientation: "portrait",
         scope: "/",
         start_url: "/",
@@ -63,12 +77,26 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest}"],
+        // Drop precaches from superseded builds instead of letting them
+        // accumulate in Cache Storage.
+        cleanupOutdatedCaches: true,
+        // Offline deep links: opening /transactions directly with no network
+        // has to resolve to the app shell.
+        navigateFallback: "/index.html",
+        // ...but never for the API. A navigation to /api/* answered with
+        // index.html is an HTML body where JSON is expected.
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*\/api\//i,
             handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",
+              // Offline, the fetch would otherwise hang on the OS timeout
+              // before falling back to cache. Five seconds and it serves what
+              // it has.
+              networkTimeoutSeconds: 5,
+              cacheableResponse: { statuses: [0, 200] },
               expiration: { maxEntries: 50, maxAgeSeconds: 300 },
             },
           },
@@ -95,6 +123,12 @@ export default defineConfig({
       },
     }),
   ],
+  // Surfaced in Settings → About. An installed PWA can silently run a build
+  // from weeks ago; without a visible stamp there is no way to tell whether a
+  // fix reached the device, which is exactly how this went unnoticed.
+  define: {
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
