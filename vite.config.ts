@@ -28,6 +28,9 @@ export default defineConfig({
         name: "Finance24",
         short_name: "Finance24",
         description: "Personal finance tracker",
+        lang: "en",
+        dir: "ltr",
+        categories: ["finance", "productivity"],
         // Matches --bg (light) and the <meta name="theme-color"> in
         // index.html. It was #16A34A, so an installed app launched with a
         // green status bar sitting directly above a near-white header.
@@ -37,9 +40,12 @@ export default defineConfig({
         // launch goes dark-green -> white on every cold start.
         background_color: "#F8FAFC",
         display: "standalone",
-        // display_override was ["standalone", "fullscreen"]. It is evaluated in
-        // order and the first supported value wins, so "fullscreen" was
-        // unreachable and the whole field just restated `display`. Dropped.
+        // It was ["standalone", "fullscreen"]: evaluated in order with the
+        // first supported value winning, so "fullscreen" was unreachable and
+        // the field only restated `display`. minimal-ui is an actual fallback
+        // — a browser without standalone lands there rather than in a full
+        // browser window.
+        display_override: ["standalone", "minimal-ui"],
         orientation: "portrait",
         scope: "/",
         start_url: "/",
