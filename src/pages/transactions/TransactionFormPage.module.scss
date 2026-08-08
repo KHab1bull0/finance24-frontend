@@ -1,15 +1,13 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-// Direct child of #root (this route is not nested in AppLayout), so 100% is
-// the measured --app-h from index.css. Same contract as .app: a fixed-height
-// flex column whose middle child does the scrolling, so the page can never
-// grow past the fold.
+// Direct child of #root (this route is not nested in AppLayout). Same contract
+// as .app: min-height plus ordinary document scroll, so nothing depends on a
+// viewport height being exactly right.
 .page {
-  height: 100%;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   background: var(--bg);
 }
 
@@ -20,10 +18,16 @@
   flex-shrink: 0;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
-  padding: 12px 16px;
-  padding-top: max(12px, env(safe-area-inset-top, 0px));
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  // Sticky so the back button stays reachable down a long form. Safe area is
+  // added to the height rather than taken out of it.
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--mobile-header-h);
+  padding: 0 16px;
+  padding-top: var(--safe-top);
+  padding-left: max(16px, var(--safe-left));
+  padding-right: max(16px, var(--safe-right));
 }
 
 .backBtn {
@@ -57,19 +61,13 @@
   white-space: nowrap;
 }
 
+// The document scrolls, so this is just the content column.
 .body {
   flex: 1;
-  // Without this a flex child refuses to shrink below its content, so a long
-  // form would grow the column instead of scrolling inside it.
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
   padding: 20px 16px;
-  padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 24px));
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: calc(24px + var(--safe-bottom));
+  padding-left: max(16px, var(--safe-left));
+  padding-right: max(16px, var(--safe-right));
 }
 
 .inner {

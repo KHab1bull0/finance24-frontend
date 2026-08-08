@@ -23,10 +23,19 @@
     -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <!--
-      black-translucent: status bar text adapts to background, content renders edge-to-edge.
-      The header already pads env(safe-area-inset-top) so nothing is clipped.
+      default, not black-translucent.
+
+      black-translucent hands the app the whole screen and draws the status bar
+      (clock, battery) ON TOP of it — the app is then responsible for keeping
+      content out from under it via env(safe-area-inset-top), and iOS does not
+      report that inset consistently in standalone. The header ended up sitting
+      underneath the clock.
+
+      With default, iOS reserves the status bar strip and the web view starts
+      below it, so there is nothing to compensate for. This is what the Rasta24
+      admin/superadmin PWAs use.
     -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Finance24" />
 
     <!-- Home screen icon — iOS requires PNG (SVG is ignored) -->
@@ -52,15 +61,9 @@
     <title>Finance24</title>
 
     <!--
-      Two things that must happen BEFORE first paint:
-
-      1. The stored theme. React sets this class in an effect, which runs after
-         paint — dark-mode users saw a white flash on every launch.
-      2. --app-h, the real visible viewport height. index.css sizes <html> from
-         it; seeding it here means the var() always resolves, so the shell is
-         never painted at the wrong height and never falls back to a bare
-         height:auto on an engine without dvh. src/lib/viewport.ts keeps it
-         current from there on.
+      Apply the stored theme BEFORE first paint. React sets this class in an
+      effect, which runs after paint — dark-mode users saw a white flash on
+      every launch.
     -->
     <script>
       (function () {
@@ -73,13 +76,6 @@
         } catch (e) {
           document.documentElement.classList.add('theme-light');
         }
-        try {
-          var vv = window.visualViewport;
-          var h = (vv && vv.scale === 1 ? vv.height : 0) || window.innerHeight;
-          if (h > 0) {
-            document.documentElement.style.setProperty('--app-h', Math.round(h) + 'px');
-          }
-        } catch (e) { /* CSS falls back to 100dvh */ }
       })();
     </script>
   </head>

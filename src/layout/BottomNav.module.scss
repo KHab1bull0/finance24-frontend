@@ -7,20 +7,31 @@
   @include bp-tablet {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+
+    // THE fix for the dead band underneath this bar.
+    //
+    // It used to be the last child of a column locked to 100dvh, so it only
+    // landed on the bottom edge if that height was exactly the visible
+    // viewport. On mobile it is not, and the leftover showed as a strip of
+    // page background below the nav with the layout pushed off the top.
+    //
+    // position:fixed hands the job to the browser: it anchors the element to
+    // the bottom of the visible viewport itself, so no gap can open under it
+    // no matter what any viewport unit reports.
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+
+    height: var(--bottom-nav-h);
     background: var(--bg-elev);
     border-top: 1px solid var(--border);
-    // The bottom inset was missing while left/right were handled, so the labels
-    // sat under the iPhone home indicator.
-    //
-    // env(x, 0px) rather than max(0px, env(x)): the inset is never negative, so
-    // max() bought nothing, and if env() were unsupported the invalid max()
-    // would drop the whole shorthand — losing the left/right insets too.
-    padding: 0
-             env(safe-area-inset-right, 0px)
-             env(safe-area-inset-bottom, 0px)
-             env(safe-area-inset-left, 0px);
-    flex-shrink: 0;
-    z-index: 30;
+    // The inset is inside the height above, so the bar reads as 56px of
+    // controls sitting clear of the home indicator.
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
   }
 }
 
@@ -30,20 +41,18 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
+  height: 56px;
   background: transparent;
   border: none;
   color: var(--fg-muted);
   font-family: inherit;
   font-size: 11px;
   font-weight: 500;
-  // line-height was inherited from body as a computed 22px, so an 11px label
-  // reserved a 22px line box — 11px of dead space in every item. That alone
-  // made the bar 66px tall before the safe-area inset was added, which read as
-  // though the whole nav had been pushed upwards.
+  // Inherited from body as a computed 22px, so an 11px label reserved a 22px
+  // line box — 11px of dead space per item, which made the bar read as though
+  // it had been shoved upwards.
   line-height: 1;
-  padding: 8px 0;
   width: 100%;
-  min-height: 44px;
   text-decoration: none;
 
   &.active { color: var(--primary); }

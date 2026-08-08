@@ -66,7 +66,27 @@
 
   --sidebar-w-expanded: 240px;
   --sidebar-w-collapsed: 64px;
-  --bottom-nav-h: 64px;
+
+  /*
+    MOBILE LAYOUT SIZES — one source of truth.
+
+    --bottom-nav-h was declared here and then used nowhere: the real spacing
+    was hardcoded as 88px and 80px in AppLayout.module.scss, and neither
+    included the device inset. It looked right on a phone with no home
+    indicator and wrong on one with a 34px inset. Everything now reads these,
+    so changing the bar moves the FAB and the content reserve with it.
+  */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+
+  /* Bottom nav: 56px of content plus the device's safe zone. */
+  --bottom-nav-h: calc(56px + var(--safe-bottom));
+  /* Mobile header: 56px of content plus the status-bar zone. */
+  --mobile-header-h: calc(56px + var(--safe-top));
+  /* The FAB floats above the nav; content must clear both. */
+  --fab-clearance: calc(var(--bottom-nav-h) + 76px);
 }
 
 /* ---------- Light theme ---------- */
@@ -194,35 +214,29 @@
   }
 
   /*
-    ONE source of truth for the app height. Everything below inherits it with
-    height: 100%.
+    NO fixed viewport height and NO overflow:hidden here.
 
-    --app-h is the measured visualViewport height: seeded in index.html before
-    first paint, kept current by src/lib/viewport.ts.
+    This used to lock html/body/#root to an exact viewport height so that only
+    an inner box scrolled. That pattern needs the height to be exactly the
+    visible viewport, and on mobile it never reliably is: with
+    viewport-fit=cover, engines disagree about whether the strip behind the
+    system navigation bar counts inside dvh. One pixel out and the bottom bar —
+    the last child of a fixed-height column — leaves a dead band beneath it and
+    the layout gets scrolled off the top. Three separate attempts to correct
+    the number failed, including measuring visualViewport directly.
 
-    Why not just 100dvh: with viewport-fit=cover the dvh unit is not reliably
-    the *visible* height -- engines differ on whether the strip behind the
-    system navigation / home-indicator bar counts. When it does, <html> renders
-    taller than the fold and the browser scrolls the visual viewport to
-    compensate: a dead band along the bottom with the layout pushed off the
-    top. Nothing inside the tree can cause that (every box is height:100% +
-    overflow:hidden, and .scroll is flex:1/min-height:0 so a taller bottom nav
-    shrinks it rather than overflowing), which leaves the unit on <html> as the
-    only possible source.
-
-    The two declarations below it are the fallback ladder: 100dvh for a browser
-    without custom properties, 100vh for one without dvh.
+    Mobile now keeps ordinary document scroll and the bottom nav is
+    position:fixed, which the browser anchors to the visible viewport bottom
+    for us — no arithmetic to get wrong. The locked shell survives on desktop
+    only, where it is what keeps the sidebar pinned; there the viewport height
+    is not in dispute. This is the arrangement the Rasta24 admin PWA uses.
   */
   html {
-    height: 100vh;
-    height: 100dvh;
-    height: var(--app-h, 100dvh);
-    overflow: hidden;
+    /* Belt and braces: nothing should be able to scroll the page sideways. */
+    overflow-x: hidden;
   }
   body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
+    min-height: 100dvh;
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
@@ -233,8 +247,7 @@
     font-feature-settings: "cv11", "ss01";
   }
   #root {
-    height: 100%;
-    overflow: hidden;
+    min-height: 100dvh;
   }
 
   :focus-visible {

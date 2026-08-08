@@ -1,13 +1,16 @@
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
 
+// Desktop locks the shell to the viewport so the sidebar stays put however long
+// the page gets, and only .scroll scrolls. Mobile deliberately does NOT: a
+// fixed-height column whose last child is the bottom bar only works if the
+// height is exactly the visible viewport, and on mobile it is not — that
+// mismatch is what left a dead band under the nav. Mobile keeps ordinary
+// document scroll and pins the nav with position:fixed instead.
 .app {
   display: grid;
   grid-template-columns: $sidebar-w-expanded 1fr;
-  // Inherits the single dvh value set on <html> in index.css. Declaring dvh
-  // again here is what let .app and #root disagree in the first place.
-  height: 100%;
-  overflow: hidden;
+  min-height: 100dvh;
 
   &.collapsed {
     grid-template-columns: $sidebar-w-collapsed 1fr;
@@ -16,6 +19,11 @@
   @include bp-tablet {
     grid-template-columns: 1fr;
   }
+
+  @include bp-desktop {
+    height: 100dvh;
+    overflow: hidden;
+  }
 }
 
 .main {
@@ -23,8 +31,11 @@
   flex-direction: column;
   min-width: 0;
   position: relative;
-  height: 100%;
-  overflow: hidden;
+
+  @include bp-desktop {
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 .mheader {
@@ -34,8 +45,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
-    padding-top: max(14px, env(safe-area-inset-top));
+    // The safe area is ADDED to the height rather than taken out of it. As
+    // padding alone it ate into a fixed 56px box and squashed the contents on
+    // a notched device.
+    height: var(--mobile-header-h);
+    padding: 0 16px;
+    padding-top: var(--safe-top);
+    padding-left: max(16px, var(--safe-left));
+    padding-right: max(16px, var(--safe-right));
     border-bottom: 1px solid var(--border);
     background: var(--bg);
     position: sticky;
@@ -55,6 +72,7 @@
 .mheaderTitle {
   font-size: 17px;
   font-weight: 600;
+  line-height: 1.2;
   color: var(--fg-strong);
 }
 
@@ -92,38 +110,33 @@
 }
 
 .scroll {
-  flex: 1;
-  // A flex-column child defaults to min-height: auto, so it refuses to shrink
-  // below its content: long pages grew this box instead of scrolling inside it,
-  // shoving the bottom nav further off-screen.
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-
-  // The FAB is position:fixed at 80px + inset above the viewport bottom and is
-  // 52px tall, while the nav below is 52px + the same inset. The inset cancels
-  // out, leaving the FAB floating over the last 80px of this box; without the
-  // reserve the final row's edit/delete buttons sat underneath it.
+  // Mobile: this is not a scroll container at all — the document scrolls. It
+  // only has to reserve room for the fixed nav and the FAB floating above it.
+  // Both now derive from --bottom-nav-h, so they cannot drift apart the way
+  // the old hardcoded 88px and 80px did.
   @include bp-tablet {
-    padding-bottom: 88px;
+    padding-bottom: var(--fab-clearance);
   }
 
-  // These belong to .scroll. A previous edit inserted a .scrollNoFab block
-  // above them and left them nested inside it, so the custom scrollbar only
-  // applied on the add/edit routes — which are touch-only, i.e. exactly where
-  // there is no scrollbar to style. Desktop had none at all.
-  &::-webkit-scrollbar { width: 10px; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: $radius-pill;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--border-strong);
-    background-clip: padding-box;
+  @include bp-desktop {
+    flex: 1;
+    // A flex-column child defaults to min-height: auto, so it refuses to shrink
+    // below its content and grows the box instead of scrolling inside it.
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar { width: 10px; }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: $radius-pill;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+      background-clip: padding-box;
+    }
   }
 }
 
@@ -133,12 +146,9 @@
   @include bp-tablet {
     display: flex;
     position: fixed;
-    // Fallbacks matter here: without one, an unsupported env() invalidates the
-    // whole calc() and bottom falls back to auto, throwing the FAB to the top.
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-    // The nav pads its left/right insets but the FAB did not, so in landscape
-    // on a notched device it drifted under the rounded corner.
-    right: calc(20px + env(safe-area-inset-right, 0px));
+    // Anchored to the same token as the nav, so the two move together.
+    bottom: calc(var(--bottom-nav-h) + 16px);
+    right: calc(20px + var(--safe-right));
     width: 52px;
     height: 52px;
     border-radius: $radius-pill;
